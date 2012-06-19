@@ -1,0 +1,19 @@
+{
+  "author": "Patrik Hedman <patrik.hedman@gmail.com>",
+  "name": "espresso",
+  "description": "",
+  "version": "0.0.1",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "~0.6.1"
+  },
+  "dependencies": {
+    "ometajs": "~3.0.15"
+  },
+  "devDependencies": {
+    "mocha": "~1.1.0",
+    "should": "~0.6.3"
+  }
+}
