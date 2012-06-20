@@ -1,4 +1,4 @@
 var Espresso = require('./lib/espresso');
 
-Espresso.compile("foobar", 'foo.es');
+Espresso.compile("10", 'foo.es', 'number');
 Espresso.ast.print_tree();
