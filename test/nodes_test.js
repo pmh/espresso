@@ -70,3 +70,12 @@ describe("String", function() {
     token.value().should.eql("foo bar");
   });
 });
+
+describe("StringExpr", function() {
+  describe("with simple string", function() {
+    it ("has a value", function () {
+      var token = _.StringExpr([_.String("foo bar")]);
+      token.value().should.eql("foo bar");
+    });
+  });
+});
