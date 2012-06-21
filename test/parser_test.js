@@ -36,4 +36,19 @@ describe("Parser", function () {
 	    parser.parseFrom('0x23af', 'number').should.eql(_.Number(9135).kind('hex'));
 	  });
   });
+  
+  describe("String Rule", function() {
+    
+    it ("can parse simple strings", function () {
+      parser.parseFrom('"foo bar"', 'string').should.eql(_.String("foo bar"));
+    });
+    
+    it ("can parse strings with escape sequences", function() {
+      parser.parseFrom('"foo \\"bar\\""', 'string').should.eql(_.String("foo \\\"bar\\\""));
+    });
+    
+    it ("can parse interpolated strings", function () {
+      parser.parseFrom('"foo #{1} bar #{"baz"}"', "string").should.eql(_.StringExpr([_.String("foo "), _.Number("1"), _.String(" bar "), _.String("baz")]));
+    });
+  });
 });

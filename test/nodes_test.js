@@ -78,4 +78,13 @@ describe("StringExpr", function() {
       token.value().should.eql("foo bar");
     });
   });
+  
+  describe("with interpolated string", function() {
+    it ("has a value", function () {
+      var token = _.StringExpr([_.String("foo bar"), 1, _.String("!")]);
+      token[2].should.eql(_.String("foo bar"));
+      token[3].should.eql(1);
+      token[4].should.eql(_.String("!"));
+    });
+  });
 });
