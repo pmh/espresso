@@ -59,3 +59,14 @@ describe ("Number", function () {
     });
   });
 });
+
+describe("String", function() {
+  var token;
+  beforeEach(function () {
+    token = _.String("foo bar");
+  });
+  
+  it ("has a value", function () {
+    token.value().should.eql("foo bar");
+  });
+});
