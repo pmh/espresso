@@ -1,6 +1,29 @@
 require('should');
 var _ = require('../lib/nodes.js');
 
+describe("Id", function() {
+  var token;
+  beforeEach(function () {
+    token = _.Id("foo");
+  });
+  
+  it ("has a value", function () {
+    token.value().should.eql("foo");
+  });
+  
+  it ("has a value", function () {
+    token.kind().should.eql("id");
+  });
+  
+  it ("should set it's kind to const if the identifier starts with a capital letter", function () {
+    _.Id("Foo").kind().should.eql("const");
+  });
+  
+  it ("should not set it's kind to const if the identifier starts with a lowercase letter", function () {
+    _.Id("fOO").kind().should.eql("id");
+  });
+});
+
 describe ("Number", function () {
   describe ("holding an integer", function () {
     var token;
