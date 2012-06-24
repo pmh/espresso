@@ -71,11 +71,26 @@ describe("Parser", function () {
     });
     
     it ("can parse strings with escape sequences", function() {
-      parser.parseFrom('"foo \\"bar\\""', 'string').should.eql(_.String("foo \\\"bar\\\""));
+      parser.parseFrom('"foo \\"bar\\""', 'string').should.eql(_.String('foo \\"bar\\"'));
     });
     
     it ("can parse interpolated strings", function () {
       parser.parseFrom('"foo #{1} bar #{"baz"}"', "string").should.eql(_.StringExpr([_.String("foo "), _.Number("1"), _.String(" bar "), _.String("baz")]));
+    });
+  });
+  
+  describe("regexp rule", function() {
+    
+    it ("can parse simple regexps", function () {
+      parser.parseFrom('/[a-z]{2}/', 'regexp').should.eql(_.RegExp("[a-z]{2}"));
+    });
+    
+    it ("can parse regexps with modifier flags", function() {
+      parser.parseFrom('/[a-z]{2}/gi', 'regexp').should.eql(_.RegExp("[a-z]{2}").flags("gi"));
+    });
+    
+    it ("can parse regexps with escape sequences", function() {
+      parser.parseFrom('/\\{/', 'regexp').should.eql(_.RegExp("\\{"));
     });
   });
 });
