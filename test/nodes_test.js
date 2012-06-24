@@ -111,3 +111,16 @@ describe("StringExpr", function() {
     });
   });
 });
+
+describe("RegExp", function() {  
+  it ("has a body", function () {
+    var token = _.RegExp("[a-z]{2}")
+    token.body().should.eql("[a-z]{2}");
+  });
+  
+  it ("keeps track of modifier flags", function () {
+    var token = _.RegExp("[a-z]{2}").flags("gi")
+    token.body().should.eql("[a-z]{2}");
+    token.flags().should.eql("gi");
+  });
+});
