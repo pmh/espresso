@@ -11,7 +11,34 @@ describe("Parser", function () {
     parser = Parser.clone();
   });
   
-  describe("Number Rule", function () {
+  describe("identifier rule", function () {
+    
+    it ("can parse alpha numerical identifiers", function () {
+      parser.parseFrom("foo", 'identifier').should.eql(_.Id("foo"));
+    });
+    
+    it ("can parse single character identifiers", function () {
+      parser.parseFrom("f", 'identifier').should.eql(_.Id("f"));
+    });
+    
+    it ("can parse mixed case identifiers", function () {
+      parser.parseFrom("FoO", 'identifier').should.eql(_.Id("FoO"));
+    });
+    
+    it ("can parse identifiers beginning with _", function () {
+      parser.parseFrom("_foo", 'identifier').should.eql(_.Id("_foo"));
+    });
+    
+    it ("can parse identifiers beginning with $", function () {
+      parser.parseFrom("$foo", 'identifier').should.eql(_.Id("$foo"));
+    });
+    
+    it ("can parse identifiers containing with digits, $ and _", function () {
+      parser.parseFrom("foo_123$", 'identifier').should.eql(_.Id("foo_123$"));
+    });
+  });
+  
+  describe("number rule", function () {
 	  it ("can parse integers", function () {
 			parser.parseFrom('2', 'number').should.eql(_.Number('2'));
 	  });
@@ -37,7 +64,7 @@ describe("Parser", function () {
 	  });
   });
   
-  describe("String Rule", function() {
+  describe("string rule", function() {
     
     it ("can parse simple strings", function () {
       parser.parseFrom('"foo bar"', 'string').should.eql(_.String("foo bar"));
