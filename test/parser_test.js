@@ -173,4 +173,27 @@ describe("Parser", function () {
       parser.parseFrom("{x:y,a:b}  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
     })
   });
+  
+	describe("array rule", function() {
+    it ("can parse empty arrays", function() {
+      parser.parseFrom("[]", "array").should.eql(_.Array());
+    });
+
+    it ("can parse arrays with a single expression", function() {
+      parser.parseFrom("[1]", "array").should.eql(_.Array([_.Number("1")]));
+    });
+  
+    it ("can parse arrays with a multiple expressions", function() {
+      parser.parseFrom('[1, "foo", bar]', "array").should.eql(_.Array([_.Number("1"), _.String("foo"), _.Id("bar")]));
+    });
+  	
+  	it ("ignores spaces", function () {
+  		parser.parseFrom("  [        ]  ", "array").should.eql(_.Array());
+  		parser.parseFrom("  [   x    ]  ", "array").should.eql(_.Array([_.Id("x")]));
+  		parser.parseFrom("  [ x , 2  ]  ", "array").should.eql(_.Array([_.Id("x"), _.Number("2")]));
+  		
+  		parser.parseFrom("[x]"  , "array").should.eql(_.Array([_.Id("x")]));
+  		parser.parseFrom("[x,1]", "array").should.eql(_.Array([_.Id("x"), _.Number("1")]));
+  	})
+  });
 });
