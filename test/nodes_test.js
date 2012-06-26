@@ -124,3 +124,20 @@ describe("RegExp", function() {
     token.flags().should.eql("gi");
   });
 });
+
+describe('Array', function () {
+  it ('appends all values', function () {
+    var token = _.Array([1, 2, 3]);
+    token[2].should.eql(1);
+    token[3].should.eql(2);
+    token[4].should.eql(3);
+  });
+  
+  it ("should not append if the first child is undefined", function () {
+    var token1 = _.Array(undefined)
+    var token2 = _.Array([undefined])
+    
+    token1.should.eql(_.Array());
+    token2.should.eql(_.Array());
+  })
+})
