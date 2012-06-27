@@ -241,6 +241,12 @@ describe("Parser", function () {
       parser.parseFrom("x <  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<"));
     });
     
+    it ('can parse shift operators', function () {
+      parser.parseFrom("x >>> y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>>"));
+      parser.parseFrom("x <<  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<<"));
+      parser.parseFrom("x >>  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>"));
+    });
+    
     it ('can parse multiple messages', function () {
       parser.parseFrom("x := y || z", "binaryMessage").should.eql(
         _.BinaryMsg (
