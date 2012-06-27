@@ -221,13 +221,18 @@ describe("Parser", function () {
       parser.parseFrom("x <<= y" , "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('<<=').assignment(true));
     });
     
-    it('can parse short-circuiting logic operators', function(){
+    it ('can parse short-circuiting logic operators', function(){
       parser.parseFrom( "x || y", "orExpr"     ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('||'));
       parser.parseFrom( "x && y", "andExpr"    ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&&'));
       parser.parseFrom( "x |  y", "bitOrExpr"  ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|'));
       parser.parseFrom( "x ^  y", "bitXorExpr" ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('^'));
       parser.parseFrom( "x &  y", "bitAndExpr" ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&'));
-    })
+    });
+    
+    it ('can parse equality operators', function () {
+      parser.parseFrom("x =  true", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("true")).operator("="));
+      parser.parseFrom("x != true", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("true")).operator("!="));
+    });
     
     it ('can parse multiple messages', function () {
       parser.parseFrom("x := y || z", "binaryMessage").should.eql(
