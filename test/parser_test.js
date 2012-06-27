@@ -217,15 +217,23 @@ describe("Parser", function () {
       parser.parseFrom("x |= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|=').assignment(true));
       
       parser.parseFrom("x >>>= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('>>>=').assignment(true));
-      parser.parseFrom("x >>= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('>>=').assignment(true));
-      parser.parseFrom("x <<= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('<<=').assignment(true));
+      parser.parseFrom("x >>= y" , "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('>>=').assignment(true));
+      parser.parseFrom("x <<= y" , "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('<<=').assignment(true));
     });
     
+    it('can parse short-circuiting logic operators', function(){
+      parser.parseFrom( "x || y", "orExpr"     ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('||'));
+      parser.parseFrom( "x && y", "andExpr"    ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&&'));
+      parser.parseFrom( "x |  y", "bitOrExpr"  ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|'));
+      parser.parseFrom( "x ^  y", "bitXorExpr" ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('^'));
+      parser.parseFrom( "x &  y", "bitAndExpr" ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&'));
+    })
+    
     it ('can parse multiple messages', function () {
-      parser.parseFrom("x := y := z", "binaryMessage").should.eql(
+      parser.parseFrom("x := y || z", "binaryMessage").should.eql(
         _.BinaryMsg (
           _.Id('x'), 
-          _.BinaryMsg(_.Id('y'), _.Id('z')).operator(':=').assignment(true)
+          _.BinaryMsg(_.Id('y'), _.Id('z')).operator('||')
         ).operator(':=').assignment(true)
       );
     });
