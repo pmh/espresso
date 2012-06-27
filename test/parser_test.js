@@ -235,16 +235,21 @@ describe("Parser", function () {
     });
     
     it ('can parse relational operators', function () {
-      parser.parseFrom("x >= y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">="));
-      parser.parseFrom("x >  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">"));
-      parser.parseFrom("x <= y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<="));
-      parser.parseFrom("x <  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<"));
+      parser.parseFrom("x >= y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">="));
+      parser.parseFrom("x >  y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">"));
+      parser.parseFrom("x <= y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<="));
+      parser.parseFrom("x <  y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<"));
     });
     
     it ('can parse shift operators', function () {
-      parser.parseFrom("x >>> y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>>"));
-      parser.parseFrom("x <<  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<<"));
-      parser.parseFrom("x >>  y", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>"));
+      parser.parseFrom("x >>> y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>>"));
+      parser.parseFrom("x <<  y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<<"));
+      parser.parseFrom("x >>  y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>"));
+    });
+    
+    it ('can parse additive operators', function () {
+      parser.parseFrom("x + y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("+"));
+      parser.parseFrom("x - y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("-"));
     });
     
     it ('can parse multiple messages', function () {
