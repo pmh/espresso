@@ -196,4 +196,38 @@ describe("Parser", function () {
   		parser.parseFrom("[x,1]", "array").should.eql(_.Array([_.Id("x"), _.Number("1")]));
   	})
   });
+  
+  describe("binary message rule", function() {
+    it ("can parse assignment", function() {
+      parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
+
+      parser.parseFrom("x += y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('+=').assignment(true));
+      parser.parseFrom("x -= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('-=').assignment(true));
+
+      parser.parseFrom("x *= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('*=').assignment(true));
+      parser.parseFrom("x /= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('/=').assignment(true));
+      parser.parseFrom("x %= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('%=').assignment(true));
+
+      parser.parseFrom("x &&= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&&=').assignment(true));
+      parser.parseFrom("x ||= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('||=').assignment(true));
+
+      parser.parseFrom("x &= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&=').assignment(true));
+      parser.parseFrom("x |= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|=').assignment(true));
+      parser.parseFrom("x ^= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('^=').assignment(true));
+      parser.parseFrom("x |= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|=').assignment(true));
+      
+      parser.parseFrom("x >>>= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('>>>=').assignment(true));
+      parser.parseFrom("x >>= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('>>=').assignment(true));
+      parser.parseFrom("x <<= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('<<=').assignment(true));
+    });
+    
+    it ('can parse multiple messages', function () {
+      parser.parseFrom("x := y := z", "binaryMessage").should.eql(
+        _.BinaryMsg (
+          _.Id('x'), 
+          _.BinaryMsg(_.Id('y'), _.Id('z')).operator(':=').assignment(true)
+        ).operator(':=').assignment(true)
+      );
+    });
+  });
 });
