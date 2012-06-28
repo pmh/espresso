@@ -197,7 +197,7 @@ describe("Parser", function () {
   	})
   });
   
-  describe("binary message rule", function() {
+  describe("message send rule", function() {
     it ("can parse assignment", function() {
       parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
 
@@ -253,9 +253,18 @@ describe("Parser", function () {
     });
     
     it ('can parse multiplicative operators', function () {
-      parser.parseFrom("x * y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("*"));
-      parser.parseFrom("x / y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("/"));
-      parser.parseFrom("x % y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("%"));
+      parser.parseFrom("x * y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("*"));
+      parser.parseFrom("x / y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("/"));
+      parser.parseFrom("x % y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("%"));
+    });
+    
+    it ("can parse unary message sends", function () {
+      parser.parseFrom('foo bar'     , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
+      parser.parseFrom('foo bar baz' , 'messageSend').should.eql(_.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.Id("baz")));
+      parser.parseFrom('1 bar'       , 'messageSend').should.eql(_.UnaryMsg(_.Number('1'), _.Id("bar")));
+      parser.parseFrom('foo 1'       , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Number('1')));
+      
+      parser.parseFrom('foo  \t  bar', 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
     });
     
     it ('can parse multiple messages', function () {
