@@ -258,13 +258,30 @@ describe("Parser", function () {
       parser.parseFrom("x % y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("%"));
     });
     
-    it ("can parse unary message sends", function () {
+    it ("can parse unary messages", function () {
       parser.parseFrom('foo bar'     , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
       parser.parseFrom('foo bar baz' , 'messageSend').should.eql(_.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.Id("baz")));
       parser.parseFrom('1 bar'       , 'messageSend').should.eql(_.UnaryMsg(_.Number('1'), _.Id("bar")));
       parser.parseFrom('foo 1'       , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Number('1')));
       
       parser.parseFrom('foo  \t  bar', 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
+    });
+    
+    it ("can parse keyword messages", function () {
+      parser.parseFrom('foo: "bar"',         'messageSend').should.eql(_.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar")]));
+      parser.parseFrom('foo: "bar" baz: 23', 'messageSend').should.eql(_.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar"),
+                                                                                     _.Keyword(_.Id('baz')), _.Number("23")]));
+    });
+    
+    it ("can parse unary messages followed by keyword messages", function () {
+      parser.parseFrom('foo bar: "baz"', 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), 
+                                                                              _.KeywordMsg([_.Keyword(_.Id('bar')), _.String("baz")])));
+      parser.parseFrom('foo bar baz: "quux"', 'messageSend').should.eql(
+        _.UnaryMsg(
+          _.UnaryMsg(
+            _.Id("foo"),
+            _.Id("bar")),
+          _.KeywordMsg([_.Keyword(_.Id('baz')), _.String("quux")])));
     });
     
     it ('can parse multiple messages', function () {
