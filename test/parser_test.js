@@ -148,29 +148,29 @@ describe("Parser", function () {
   
   describe("map rule", function() {
     it ("can parse empty maps", function() {
-      parser.parseFrom("{:}", "map").should.eql(_.Map());
+      parser.parseFrom("#{}", "map").should.eql(_.Map());
     });
     
     it ("can parse maps with a single key value pair", function() {
-      parser.parseFrom("{ x: y }", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
+      parser.parseFrom("#{ x=> y }", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
     });
 
     it ("can parse maps with a multiple key value pairs", function() {
-      parser.parseFrom("{ x : y, a : b }", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
+      parser.parseFrom("#{ x => y, a => b }", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
     });
     
     it ("allows keys and values to be expressions", function () {
-      parser.parseFrom('{ 2: "x" }', "map").should.eql(_.Map([_.KeyValuePair(_.Number("2"), _.String("x"))]));
+      parser.parseFrom('#{ 2=> "x" }', "map").should.eql(_.Map([_.KeyValuePair(_.Number("2"), _.String("x"))]));
     });
     
     it ("ignores spaces", function () {
-      parser.parseFrom("  {       :        }  ", "map").should.eql(_.Map());
-      parser.parseFrom("  {   x   :    y   }  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
-      parser.parseFrom("  { x : y , a : b  }  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
-      parser.parseFrom('  {   2   :   "x"  }  ', "map").should.eql(_.Map([_.KeyValuePair(_.Number("2"), _.String("x"))]));
+      parser.parseFrom("  #{                }  ", "map").should.eql(_.Map());
+      parser.parseFrom("  #{   x   =>    y   }  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
+      parser.parseFrom("  #{ x => y , a => b  }  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
+      parser.parseFrom('  #{   2   =>   "x"  }  ', "map").should.eql(_.Map([_.KeyValuePair(_.Number("2"), _.String("x"))]));
       
-      parser.parseFrom("{x:y}", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
-      parser.parseFrom("{x:y,a:b}  ", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
+      parser.parseFrom("#{x=>y}"    , "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
+      parser.parseFrom("#{x=>y,a=>b}", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
     })
   });
   
