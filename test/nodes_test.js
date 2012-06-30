@@ -128,9 +128,7 @@ describe("RegExp", function() {
 describe('Array', function () {
   it ('appends all values', function () {
     var token = _.Array([1, 2, 3]);
-    token[2].should.eql(1);
-    token[3].should.eql(2);
-    token[4].should.eql(3);
+    token.slice(2).should.eql([1, 2, 3]);
   });
   
   it ("should not append if the first child is undefined", function () {
@@ -140,4 +138,16 @@ describe('Array', function () {
     token1.should.eql(_.Array());
     token2.should.eql(_.Array());
   })
-})
+});
+
+describe('KeywordMsg', function () {
+  it ("should set it's name to the concatenated value of all the keyword nodes", function () {
+    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar"), _.Keyword(_.Id("baz")), _.Id("quux")]);
+    token.name().should.eql('foo:baz:');
+  });
+  
+  it ("should append all non keyword nodes", function () {
+    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar"), _.Keyword(_.Id("baz")), _.Id("quux")]);
+    token.slice(2).should.eql([_.Id("bar"), _.Id("quux")]);
+  });
+});
