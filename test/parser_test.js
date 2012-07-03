@@ -284,6 +284,18 @@ describe("Parser", function () {
           _.KeywordMsg([_.Keyword(_.Id('baz')), _.String("quux")])));
     });
     
+    it ("can parse unary messages followed by keyword method definitions", function () {
+      parser.parseFrom('foo bar: baz := {}', 'messageSend').should.eql(
+        _.UnaryMsg(_.Id("foo"), _.Method(_.KeywordMsg([_.Keyword(_.Id("bar")), _.Id("baz")]), [])));
+      
+      parser.parseFrom('foo bar baz: quux := {}', 'messageSend').should.eql(
+        _.UnaryMsg(
+          _.UnaryMsg(
+            _.Id("foo"),
+            _.Id("bar")),
+          _.Method(_.KeywordMsg([_.Keyword(_.Id("baz")), _.Id("quux")]), [])));
+    });
+    
     it ('can parse multiple messages', function () {
       parser.parseFrom("x := y || z", "binaryMessage").should.eql(
         _.BinaryMsg (
@@ -291,6 +303,22 @@ describe("Parser", function () {
           _.BinaryMsg(_.Id('y'), _.Id('z')).operator('||')
         ).operator(':=').assignment(true)
       );
+    });
+  });
+  
+  describe ("method def rule", function () {
+    
+    it ("can parse keyword methods", function () {
+      parser.parseFrom("foo: bar := {}", 'methodDef').should.eql(_.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar")]), []));
+      parser.parseFrom("foo: bar := { x }", 'methodDef').should.eql(_.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar")]), [_.Id("x")]));
+      parser.parseFrom("foo: bar := { x\ny }", 'methodDef').should.eql(
+        _.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar")]), [_.Id("x"), _.Id("y")]));
+      parser.parseFrom("foo: bar baz: quux := {}", 'methodDef').should.eql(
+        _.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar"), _.Keyword(_.Id("baz")), _.Id("quux")]), []));
+      
+      parser.parseFrom("foo: *bar := {}", 'methodDef').should.eql(_.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.VarArg(_.Id("bar"))]), []));
+      parser.parseFrom("foo: bar(2) := {}", 'methodDef').should.eql(
+        _.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.OptArg(_.Id("bar"), _.Number("2"))]), []));
     });
   });
 });
