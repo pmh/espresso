@@ -199,7 +199,7 @@ describe("Parser", function () {
   
   describe("message send rule", function() {
     it ("can parse assignment", function() {
-      parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
+      //parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
 
       parser.parseFrom("x += y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('+=').assignment(true));
       parser.parseFrom("x -= y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('-=').assignment(true));
@@ -286,22 +286,35 @@ describe("Parser", function () {
     
     it ("can parse unary messages followed by keyword method definitions", function () {
       parser.parseFrom('foo bar: baz := {}', 'messageSend').should.eql(
-        _.UnaryMsg(_.Id("foo"), _.Method(_.KeywordMsg([_.Keyword(_.Id("bar")), _.Id("baz")]), [])));
+        _.AssignMsg(_.Id("foo"), _.Method(_.KeywordMsg([_.Keyword(_.Id("bar")), _.Id("baz")]), [])));
       
       parser.parseFrom('foo bar baz: quux := {}', 'messageSend').should.eql(
-        _.UnaryMsg(
+        _.AssignMsg(
           _.UnaryMsg(
             _.Id("foo"),
             _.Id("bar")),
           _.Method(_.KeywordMsg([_.Keyword(_.Id("baz")), _.Id("quux")]), [])));
     });
     
+    
+    it ("can parse unary messages followed by binary method definitions", function () {
+      parser.parseFrom('foo + := { x | }', 'messageSend').should.eql(
+        _.AssignMsg(_.Id("foo"), _.Method(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")));
+      
+      parser.parseFrom('foo bar + := {x|}', 'messageSend').should.eql(
+        _.AssignMsg(
+          _.UnaryMsg(
+            _.Id("foo"),
+            _.Id("bar")),
+          _.Method(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")));
+    });
+    
     it ('can parse multiple messages', function () {
-      parser.parseFrom("x := y || z", "binaryMessage").should.eql(
+      parser.parseFrom("x += y || z", "binaryMessage").should.eql(
         _.BinaryMsg (
           _.Id('x'), 
           _.BinaryMsg(_.Id('y'), _.Id('z')).operator('||')
-        ).operator(':=').assignment(true)
+        ).operator('+=').assignment(true)
       );
     });
   });
@@ -319,6 +332,37 @@ describe("Parser", function () {
       parser.parseFrom("foo: *bar := {}", 'methodDef').should.eql(_.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.VarArg(_.Id("bar"))]), []));
       parser.parseFrom("foo: bar(2) := {}", 'methodDef').should.eql(
         _.Method(_.KeywordMsg([_.Keyword(_.Id("foo")), _.OptArg(_.Id("bar"), _.Number("2"))]), []));
+    });
+        
+    it ("can parse binary methods", function () {
+      parser.parseFrom("||  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('||'));
+      parser.parseFrom("&&  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('&&'));
+      parser.parseFrom("|   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('|'));
+      parser.parseFrom("^   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('^'));
+      parser.parseFrom("&   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('&'));
+      parser.parseFrom("=   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('='));
+      parser.parseFrom("!=  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('!='));
+      parser.parseFrom("<=  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('<='));
+      parser.parseFrom("<   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('<'));
+      parser.parseFrom(">=  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('>='));
+      parser.parseFrom(">   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('>'));
+      parser.parseFrom(">>> := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('>>>'));
+      parser.parseFrom(">>  := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('>>'));
+      parser.parseFrom("+   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('+'));
+      parser.parseFrom("-   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('-'));
+      parser.parseFrom("*   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('*'));
+      parser.parseFrom("/   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('/'));
+      parser.parseFrom("%   := { lhs | }", 'methodDef').should.eql(_.Method(_.FunArgs([_.Id("lhs")]), _.FunBody([])).name('%'));
+    });
+    
+    it ("can parse unary methods", function () {
+      parser.parseFrom("foo := { }", "messageSend").should.eql(
+        _.AssignMsg(_.Id("self"), _.BinaryMsg(_.Id("foo"), _.Lambda(_.FunArgs(), _.FunBody())).operator(":=").assignment(true)));
+      parser.parseFrom("foo bar := { }", "messageSend").should.eql(
+        _.AssignMsg(_.Id("foo"), _.BinaryMsg(_.Id("bar"), _.Lambda(_.FunArgs(), _.FunBody())).operator(":=").assignment(true)));
+      
+      parser.parseFrom("foo := 23", "messageSend").should.eql(
+        _.AssignMsg(_.Id("self"), _.BinaryMsg(_.Id("foo"), _.Number("23")).operator(":=").assignment(true)));
     });
   });
 });
