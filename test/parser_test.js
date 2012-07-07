@@ -89,7 +89,7 @@ describe("Parser", function () {
     
     it ("can parse interpolated strings", function () {
       parser.parseFrom('"foo #{1} bar #{"baz"}"', "string").should.eql(
-        _.StringExpr([_.String("foo "), _.UnaryMsg(_.Id("self"), _.Number("1")), _.String(" bar "), _.UnaryMsg(_.Id("self"), _.String("baz"))]));
+        _.StringExpr([_.String("foo "), _.Number("1"), _.String(" bar "), _.String("baz")]));
     });
     
     it ("ignores spaces", function() {
