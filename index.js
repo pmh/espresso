@@ -1,4 +1,3 @@
 var Espresso = require('./lib/espresso');
 
-Espresso.compile('   23  ', 'foo.es');
-Espresso.ast.print_tree();
+Espresso.parse(require("fs").readFileSync("./examples/HelloWorld.es", "utf8")).print_tree();
