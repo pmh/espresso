@@ -198,6 +198,18 @@ describe("Parser", function () {
   	})
   });
   
+
+  describe("raw js rule", function() {
+    it ("consumes everything inside ` and `", function() {
+      parser.parseFrom( "`var foo = function () {};`"      , "rawJS" ).should.eql(_.RawJS().value( "var foo = function () {};"       ));
+      parser.parseFrom( "`var foo;\nfoo = function () {};`", "rawJS" ).should.eql(_.RawJS().value( "var foo;\nfoo = function () {};" ));
+    });
+    
+    it ("ignores spaces", function () {
+      parser.parseFrom("   `var foo;`   ", "rawJS").should.eql(_.RawJS().value("var foo;"));
+    })
+  });
+
   describe("message send rule", function() {
     it ("can parse assignment", function() {
       //parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
