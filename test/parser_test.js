@@ -249,40 +249,65 @@ describe("Parser", function () {
     });
     
     it ('can parse short-circuiting logic operators', function(){
-      parser.parseFrom( "x || y", "binaryMessage" ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('||'));
-      parser.parseFrom( "x && y", "andExpr"       ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&&'));
-      parser.parseFrom( "x |  y", "bitOrExpr"     ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('|'));
-      parser.parseFrom( "x ^  y", "bitXorExpr"    ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('^'));
-      parser.parseFrom( "x &  y", "bitAndExpr"    ).should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator('&'));
+      parser.parseFrom( "x || y", "binaryMessage" ).should.eql(_.BinaryMsg(_.Id('x'),    _.Id('y')).operator('||'));
+      parser.parseFrom( "x && y", "andExpr"       ).should.eql(_.BinaryMsg(_.Id('x'),    _.Id('y')).operator('&&'));
+      parser.parseFrom( "x |  y", "bitOrExpr"     ).should.eql(_.BinaryMsg(_.Id('x'),    _.Id('y')).operator('|'));
+      parser.parseFrom( "x ^  y", "bitXorExpr"    ).should.eql(_.BinaryMsg(_.Id('x'),    _.Id('y')).operator('^'));
+      parser.parseFrom( "x &  y", "bitAndExpr"    ).should.eql(_.BinaryMsg(_.Id('x'),    _.Id('y')).operator('&'));
+
+      parser.parseFrom( "|| y", "binaryMessage"   ).should.eql(_.BinaryMsg(_.Id('self'), _.Id('y')).operator('||'));
+      parser.parseFrom( "&& y", "andExpr"         ).should.eql(_.BinaryMsg(_.Id('self'), _.Id('y')).operator('&&'));
+      parser.parseFrom( "|  y", "bitOrExpr"       ).should.eql(_.BinaryMsg(_.Id('self'), _.Id('y')).operator('|'));
+      parser.parseFrom( "^  y", "bitXorExpr"      ).should.eql(_.BinaryMsg(_.Id('self'), _.Id('y')).operator('^'));
+      parser.parseFrom( "&  y", "bitAndExpr"      ).should.eql(_.BinaryMsg(_.Id('self'), _.Id('y')).operator('&'));
     });
     
     it ('can parse equality operators', function () {
-      parser.parseFrom("x =  true", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("true")).operator("="));
-      parser.parseFrom("x != true", "eqExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("true")).operator("!="));
+      parser.parseFrom( "x =  true", "eqExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("true")).operator("="));
+      parser.parseFrom( "x != true", "eqExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("true")).operator("!="));
+
+      parser.parseFrom( "=  true", "eqExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("true")).operator("="));
+      parser.parseFrom( "!= true", "eqExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("true")).operator("!="));
     });
     
     it ('can parse relational operators', function () {
-      parser.parseFrom("x >= y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">="));
-      parser.parseFrom("x >  y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">"));
-      parser.parseFrom("x <= y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<="));
-      parser.parseFrom("x <  y", "relExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<"));
+      parser.parseFrom( "x >= y", "relExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator(">="));
+      parser.parseFrom( "x >  y", "relExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator(">"));
+      parser.parseFrom( "x <= y", "relExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("<="));
+      parser.parseFrom( "x <  y", "relExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("<"));
+
+      parser.parseFrom( ">= y", "relExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator(">="));
+      parser.parseFrom( ">  y", "relExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator(">"));
+      parser.parseFrom( "<= y", "relExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("<="));
+      parser.parseFrom( "<  y", "relExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("<"));
     });
     
     it ('can parse shift operators', function () {
-      parser.parseFrom("x >>> y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>>"));
-      parser.parseFrom("x <<  y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("<<"));
-      parser.parseFrom("x >>  y", "shiftExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator(">>"));
+      parser.parseFrom( "x >>> y", "shiftExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator(">>>"));
+      parser.parseFrom( "x <<  y", "shiftExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("<<"));
+      parser.parseFrom( "x >>  y", "shiftExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator(">>"));
+
+      parser.parseFrom( ">>> y", "shiftExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator(">>>"));
+      parser.parseFrom( "<<  y", "shiftExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("<<"));
+      parser.parseFrom( ">>  y", "shiftExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator(">>"));
     });
     
     it ('can parse additive operators', function () {
-      parser.parseFrom("x + y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("+"));
-      parser.parseFrom("x - y", "addExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("-"));
+      parser.parseFrom( "x + y", "addExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("+"));
+      parser.parseFrom( "x - y", "addExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("-"));
+
+      parser.parseFrom( "+ y", "addExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("+"));
+      parser.parseFrom( "- y", "addExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("-"));
     });
     
     it ('can parse multiplicative operators', function () {
-      parser.parseFrom("x * y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("*"));
-      parser.parseFrom("x / y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("/"));
-      parser.parseFrom("x % y", "mulExpr").should.eql(_.BinaryMsg(_.Id("x"), _.Id("y")).operator("%"));
+      parser.parseFrom( "x * y", "mulExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("*"));
+      parser.parseFrom( "x / y", "mulExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("/"));
+      parser.parseFrom( "x % y", "mulExpr" ).should.eql(_.BinaryMsg(_.Id("x"),    _.Id("y")).operator("%"));
+
+      parser.parseFrom( "* y", "mulExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("*"));
+      parser.parseFrom( "/ y", "mulExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("/"));
+      parser.parseFrom( "% y", "mulExpr"   ).should.eql(_.BinaryMsg(_.Id("self"), _.Id("y")).operator("%"));
     });
     
     it ("can parse unary messages", function () {
