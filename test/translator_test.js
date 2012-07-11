@@ -1,8 +1,8 @@
 require("should");
-require("ometajs");
+require("ometa");
 require("../lib/espresso");
 
-var Translator = require('../lib/grammars/translator.ometajs').Translator
+var Translator = require('../lib/grammars/translator.ojs').Translator
     , _        = require('../lib/nodes')
     , Self     = function (expr) { return _.UnaryMsg(_.Id("self"), expr); };
 
