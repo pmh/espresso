@@ -12,6 +12,13 @@ describe("Translator", function () {
     translator = Translator.clone();
   });
 
+  describe("Identifiers", function () {
+
+    it("should be able to translate identifiers", function() {
+      translator.translate(_.Id("foo")).should.eql("foo");
+    });
+  });
+
   describe("Numbers", function () {
     it("should be able to translate integers", function() {
       translator.translate(_.Number("2")).should.eql("2");
