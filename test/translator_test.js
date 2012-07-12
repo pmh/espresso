@@ -41,6 +41,22 @@ describe("Translator", function () {
       compile("2_000_000").should.eql("2000000");
     });
   });
+
+  describe("Strings", function() {
+    it ("should be able to translate regular strings", function () {
+      compile('"foo bar"').should.eql('"foo bar"');
+    });
+    
+    it ("can translate escaped strings", function() {
+      compile('"foo \\"bar\\""').should.eql('"foo \\"bar\\""');
+    });
+
+    it("can translate multi-line strings", function() {
+      compile('"foo\nbar\nbaz"').should.eql('"foo\\nbar\\nbaz"')
+    });
+    
+    it ("can translate interpolated strings", function () {
+      compile('"foo #{1} bar #{"baz"}"', 'expr').should.eql('["foo ", 1, " bar ", "baz"].join("")');
     });
   });
 });
