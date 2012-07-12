@@ -59,4 +59,18 @@ describe("Translator", function () {
       compile('"foo #{1} bar #{"baz"}"', 'expr').should.eql('["foo ", 1, " bar ", "baz"].join("")');
     });
   });
+
+  describe("Regular Expressions", function() {
+    it("should translate simple regexps", function() {
+      compile('/[a-z]{2}/').should.eql('/[a-z]{2}/');
+    });
+
+    it("should translate regexps with modifier flags", function() {
+      compile('/[a-z]{2}/gi').should.eql('/[a-z]{2}/gi');
+    });
+
+    it("should translate regexps with escape sequences", function() {
+      compile('/\\{/').should.eql('/\\{/');
+    });
+  });
 });
