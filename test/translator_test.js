@@ -4,6 +4,8 @@ require("../lib/espresso");
 
 var Translator = require('../lib/grammars/translator.ojs')
   , Parser     = require('../lib/grammars/parser.ojs')
+  , join       = require('../lib/utils.js').join
+  , join_nl    = require('../lib/utils.js').join_nl
 
 describe("Translator", function () {
   var translator, parser, compile;
@@ -71,6 +73,67 @@ describe("Translator", function () {
 
     it("should translate regexps with escape sequences", function() {
       compile('/\\{/').should.eql('/\\{/');
+    });
+  });
+
+  describe("Lambdas", function() {
+    it("should translate empty lambdas", function() {
+      compile('{}').should.eql(join_nl(
+        'function () {',
+        '  var self = this.clone();',
+        '  return nil;',
+        '}'
+      ));
+    });
+
+    it("should translate lambdas with a single expression", function() {
+      compile('{ "foo" }').should.eql(join_nl(
+        'function () {',
+        '  var self = this.clone();',
+        '  return "foo";',
+        '}'
+      ));
+    });
+
+    it("should translate lambdas with multiple expressions", function() {
+      compile('{ "foo"\n2 }').should.eql(join_nl(
+        'function () {',
+        '  var self = this.clone();',
+        '  "foo";',
+        '  return 2;',
+        '}'
+      ));
+    });
+
+    it("should translate lambdas with a single argument", function () {
+      compile('{ foo | }').should.eql(join_nl(
+        'function (foo) {',
+        '  var self = this.clone();',
+        '  self["foo"] = foo;',
+        '  return nil;',
+        '}'
+      ));
+    });
+
+    it("should translate lambdas with multiple arguments", function () {
+      compile('{ foo, bar, baz | }').should.eql(join_nl(
+        'function (foo, bar, baz) {',
+        '  var self = this.clone();',
+        '  self["foo"] = foo; self["bar"] = bar; self["baz"] = baz;',
+        '  return nil;',
+        '}'
+      ));
+    });
+
+    it("should translate lambdas with arguments and expressions", function () {
+      compile('{ foo, bar, baz | "foo"\n2 }').should.eql(join_nl(
+        'function (foo, bar, baz) {',
+        '  var self = this.clone();',
+        '  self["foo"] = foo; self["bar"] = bar; self["baz"] = baz;',
+        '  "foo";',
+        '  return 2;',
+        '}'
+      ));
     });
   });
 });
