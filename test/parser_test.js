@@ -3,8 +3,7 @@ require("ometa");
 require("../lib/espresso");
 
 var Parser = require('../lib/grammars/parser.ojs')
-	, _      = require('../lib/nodes')
-  , Self   = function (expr) { return _.UnaryMsg(_.Id("self"), expr); };
+	, _      = require('../lib/nodes');
 
 describe("Parser", function () {
   var parser;
@@ -123,7 +122,7 @@ describe("Parser", function () {
     });
     
     it ("can parse lambdas without arguments", function() {
-      parser.parseFrom("{ x }", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{ x }", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([_.Id("x")])));
     });
     
     it ("can parse empty lambdas with params", function () {
@@ -131,20 +130,20 @@ describe("Parser", function () {
     });
     
     it ("can parse lambdas with params and body", function () {
-      parser.parseFrom("{ x | x }", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{ x | x }", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([_.Id("x")])));
     });
     
     it ("ignores spaces", function () {
-      parser.parseFrom("{x}", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{x}", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([_.Id("x")])));
       parser.parseFrom("{x|}", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])));
-      parser.parseFrom("{x|x}", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{x|x}", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([_.Id("x")])));
       
-      parser.parseFrom("   {x}    ", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("   {x}    ", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([_.Id("x")])));
       
       parser.parseFrom("{            }", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([])));
-      parser.parseFrom("{  x         }", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{  x         }", "lambda").should.eql(_.Lambda(_.FunArgs([]), _.FunBody([_.Id("x")])));
       parser.parseFrom("{  x  |      }", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])));
-      parser.parseFrom("{  x  |  x   }", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([Self(_.Id("x"))])));
+      parser.parseFrom("{  x  |  x   }", "lambda").should.eql(_.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([_.Id("x")])));
     });
   });
   
@@ -154,19 +153,19 @@ describe("Parser", function () {
     });
     
     it ("can parse maps with a single key value pair", function() {
-      parser.parseFrom("#{ x: y }", "map").should.eql(_.Map([_.KeyValuePair(_.String("x"), Self(_.Id("y")))]));
+      parser.parseFrom("#{ x: y }", "map").should.eql(_.Map([_.KeyValuePair(_.String("x"), _.Id("y"))]));
     });
 
     it ("can parse maps with a multiple key value pairs", function() {
       parser.parseFrom("#{ x : y, a : b }", "map").should.eql(
-        _.Map([_.KeyValuePair(_.String("x"), Self(_.Id("y"))), _.KeyValuePair(_.String("a"), Self(_.Id("b")))]));
+        _.Map([_.KeyValuePair(_.String("x"), _.Id("y")), _.KeyValuePair(_.String("a"), _.Id("b"))]));
     });
        
     it ("ignores spaces", function () {
       parser.parseFrom("  #{                }  ", "map").should.eql(_.Map());
-      parser.parseFrom("  #{   x   :    y   }  ", "map").should.eql(_.Map([_.KeyValuePair(_.String("x"), Self(_.Id("y")))]));
+      parser.parseFrom("  #{   x   :    y   }  ", "map").should.eql(_.Map([_.KeyValuePair(_.String("x"), _.Id("y"))]));
       parser.parseFrom("  #{ x : y , a : b  }  ", "map").should.eql(
-        _.Map([_.KeyValuePair(_.String("x"), Self(_.Id("y"))), _.KeyValuePair(_.String("a"), Self(_.Id("b")))]));
+        _.Map([_.KeyValuePair(_.String("x"), _.Id("y")), _.KeyValuePair(_.String("a"), _.Id("b"))]));
       
       // parser.parseFrom("#{x:y}"    , "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y"))]));
       // parser.parseFrom("#{x:y,a:b}", "map").should.eql(_.Map([_.KeyValuePair(_.Id("x"), _.Id("y")), _.KeyValuePair(_.Id("a"), _.Id("b"))]));
@@ -183,16 +182,16 @@ describe("Parser", function () {
     });
   
     it ("can parse arrays with a multiple expressions", function() {
-      parser.parseFrom('[1, "foo", bar]', "array").should.eql(_.Array([_.Number("1"), _.String("foo"), Self(_.Id("bar"))]));
+      parser.parseFrom('[1, "foo", bar]', "array").should.eql(_.Array([_.Number("1"), _.String("foo"), _.Id("bar")]));
     });
   	
   	it ("ignores spaces", function () {
   		parser.parseFrom("  [        ]  ", "array").should.eql(_.Array());
-  		parser.parseFrom("  [   x    ]  ", "array").should.eql(_.Array([Self(_.Id("x"))]));
-  		parser.parseFrom("  [ x , 2  ]  ", "array").should.eql(_.Array([Self(_.Id("x")), _.Number("2")]));
+  		parser.parseFrom("  [   x    ]  ", "array").should.eql(_.Array([_.Id("x")]));
+  		parser.parseFrom("  [ x , 2  ]  ", "array").should.eql(_.Array([_.Id("x"), _.Number("2")]));
   		
-  		parser.parseFrom("[x]"  , "array").should.eql(_.Array([Self(_.Id("x"))]));
-  		parser.parseFrom("[x,1]", "array").should.eql(_.Array([Self(_.Id("x")), _.Number("1")]));
+  		parser.parseFrom("[x]"  , "array").should.eql(_.Array([_.Id("x")]));
+  		parser.parseFrom("[x,1]", "array").should.eql(_.Array([_.Id("x"), _.Number("1")]));
   	})
   });
   
@@ -213,176 +212,168 @@ describe("Parser", function () {
       //parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));
 
       parser.parseFrom("x += y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('+=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('+='));
       parser.parseFrom("x -= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('-=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('-='));
 
       parser.parseFrom("x *= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('*=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('*='));
       parser.parseFrom("x /= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('/=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('/='));
       parser.parseFrom("x %= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('%=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('%='));
 
       parser.parseFrom("x &&= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('&&=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('&&='));
       parser.parseFrom("x ||= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('||=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('||='));
 
       parser.parseFrom("x &= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('&=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('&='));
       parser.parseFrom("x |= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('|=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('|='));
       parser.parseFrom("x ^= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('^=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('^='));
       parser.parseFrom("x |= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('|=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('|='));
       
       parser.parseFrom("x >>>= y", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('>>>=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('>>>='));
       parser.parseFrom("x >>= y" , "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('>>=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('>>='));
       parser.parseFrom("x <<= y" , "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id('x'), Self(_.Id("y"))).operator('<<=')));
+        _.AssignMsg(_.Id('x'), _.Id("y")).operator('<<='));
     });
     
     it ('can parse short-circuiting logic operators', function(){
-      parser.parseFrom( "x || y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("||"))));
-      parser.parseFrom( "x && y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("&&"))));
-      parser.parseFrom( "x |  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("|"))));
-      parser.parseFrom( "x ^  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("^"))));
-      parser.parseFrom( "x &  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("&"))));
+      parser.parseFrom( "x || y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("||")));
+      parser.parseFrom( "x && y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&&")));
+      parser.parseFrom( "x |  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("|")));
+      parser.parseFrom( "x ^  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("^")));
+      parser.parseFrom( "x &  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&")));
 
-      parser.parseFrom( "|| y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("||")));
-      parser.parseFrom( "&& y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("&&")));
-      parser.parseFrom( "|  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("|")));
-      parser.parseFrom( "^  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("^")));
-      parser.parseFrom( "&  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("&")));
+      parser.parseFrom( "|| y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("||"));
+      parser.parseFrom( "&& y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&&"));
+      parser.parseFrom( "|  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("|"));
+      parser.parseFrom( "^  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("^"));
+      parser.parseFrom( "&  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&"));
     });
     
     it ('can parse equality operators', function () {
-      parser.parseFrom( "x =  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("="))));
-      parser.parseFrom( "x != y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("!="))));
+      parser.parseFrom( "x =  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("=")));
+      parser.parseFrom( "x != y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("!=")));
 
-      parser.parseFrom( "=  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("=")));
-      parser.parseFrom( "!= y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("!=")));
+      parser.parseFrom( "=  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("="));
+      parser.parseFrom( "!= y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("!="));
     });
     
     it ('can parse relational operators', function () {
-      parser.parseFrom( "x >= y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator(">="))));
-      parser.parseFrom( "x >  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator(">"))));
-      parser.parseFrom( "x <= y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("<="))));
-      parser.parseFrom( "x <  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("<"))));
+      parser.parseFrom( "x >= y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator(">=")));
+      parser.parseFrom( "x >  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator(">")));
+      parser.parseFrom( "x <= y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("<=")));
+      parser.parseFrom( "x <  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("<")));
 
-      parser.parseFrom( ">= y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator(">=")));
-      parser.parseFrom( ">  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator(">")));
-      parser.parseFrom( "<= y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("<=")));
-      parser.parseFrom( "<  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("<")));
+      parser.parseFrom( ">= y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator(">="));
+      parser.parseFrom( ">  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator(">"));
+      parser.parseFrom( "<= y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("<="));
+      parser.parseFrom( "<  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("<"));
     });
     
     it ('can parse shift operators', function () {
-      parser.parseFrom( "x >>> y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator(">>>"))));
-      parser.parseFrom( "x <<  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("<<"))));
-      parser.parseFrom( "x >>  y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator(">>"))));
+      parser.parseFrom( "x >>> y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator(">>>")));
+      parser.parseFrom( "x <<  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("<<")));
+      parser.parseFrom( "x >>  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator(">>")));
 
-      parser.parseFrom( ">>> y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator(">>>")));
-      parser.parseFrom( "<<  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("<<")));
-      parser.parseFrom( ">>  y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator(">>")));
+      parser.parseFrom( ">>> y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator(">>>"));
+      parser.parseFrom( "<<  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("<<"));
+      parser.parseFrom( ">>  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator(">>"));
     });
     
     it ('can parse additive operators', function () {
-      parser.parseFrom( "x + y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("+"))));
-      parser.parseFrom( "x - y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("-"))));
+      parser.parseFrom( "x + y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("+")));
+      parser.parseFrom( "x - y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("-")));
 
-      parser.parseFrom( "+ y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("+")));
-      parser.parseFrom( "- y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("-")));
+      parser.parseFrom( "+ y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("+"));
+      parser.parseFrom( "- y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("-"));
     });
     
     it ('can parse multiplicative operators', function () {
-      parser.parseFrom( "x * y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("*"))));
-      parser.parseFrom( "x / y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("/"))));
-      parser.parseFrom( "x % y", "messageSend" ).should.eql(Self(_.UnaryMsg(_.Id("x"), _.BinaryMsg(Self(_.Id("y"))).operator("%"))));
+      parser.parseFrom( "x * y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("*")));
+      parser.parseFrom( "x / y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("/")));
+      parser.parseFrom( "x % y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("%")));
 
-      parser.parseFrom( "* y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("*")));
-      parser.parseFrom( "/ y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("/")));
-      parser.parseFrom( "% y",   "messageSend" ).should.eql(Self(_.BinaryMsg(Self(_.Id("y"))).operator("%")));
+      parser.parseFrom( "* y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("*"));
+      parser.parseFrom( "/ y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("/"));
+      parser.parseFrom( "% y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("%"));
     });
     
     it ("can parse unary messages", function () {
-      parser.parseFrom('foo bar'     , 'messageSend').should.eql(Self(_.UnaryMsg(_.Id("foo"), _.Id("bar"))));
-      parser.parseFrom('foo bar baz' , 'messageSend').should.eql(Self(_.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.Id("baz"))));
+      parser.parseFrom('foo bar'     , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
+      parser.parseFrom('foo bar baz' , 'messageSend').should.eql(_.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.Id("baz")));
       parser.parseFrom('1 bar'       , 'messageSend').should.eql(_.UnaryMsg(_.Number('1'), _.Id("bar")));
-      parser.parseFrom('foo 1'       , 'messageSend').should.eql(Self(_.UnaryMsg(_.Id("foo"), _.Number('1'))));      
-      parser.parseFrom('foo  \t  bar', 'messageSend').should.eql(Self(_.UnaryMsg(_.Id("foo"), _.Id("bar"))));
+      parser.parseFrom('foo 1'       , 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Number('1')));      
+      parser.parseFrom('foo  \t  bar', 'messageSend').should.eql(_.UnaryMsg(_.Id("foo"), _.Id("bar")));
     });
     
     it ("can parse keyword messages", function () {
       parser.parseFrom('foo: "bar"',         'messageSend').should.eql(
-        Self(_.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar")])));
+        _.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar")]));
 
       parser.parseFrom('foo: "bar" baz: 23', 'messageSend').should.eql(
-        Self(_.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar"), _.Keyword(_.Id('baz')), _.Number("23")])));
+        _.KeywordMsg([_.Keyword(_.Id('foo')), _.String("bar"), _.Keyword(_.Id('baz')), _.Number("23")]));
     });
     
     it ("can parse unary messages followed by keyword messages", function () {
       parser.parseFrom('foo bar: "baz"', 'messageSend').should.eql(
-        Self(_.UnaryMsg(_.Id("foo"), _.KeywordMsg([_.Keyword(_.Id('bar')), _.String("baz")]))));
+        _.UnaryMsg(_.Id("foo"), _.KeywordMsg([_.Keyword(_.Id('bar')), _.String("baz")])));
 
       parser.parseFrom('foo bar baz: "quux"', 'messageSend').should.eql(
-        Self(_.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.KeywordMsg([_.Keyword(_.Id('baz')), _.String("quux")]))));
+        _.UnaryMsg(_.UnaryMsg(_.Id("foo"), _.Id("bar")), _.KeywordMsg([_.Keyword(_.Id('baz')), _.String("quux")])));
     });
     
     it ("can parse unary messages followed by keyword method definitions", function () {
       parser.parseFrom('foo bar: baz := {}', 'expr').should.eql(
-        Self(
-          _.UnaryMsg(
-            _.Id("foo"),
-            _.AssignMsg(
-              _.Id("bar:"),
-              _.Lambda(_.FunArgs([_.Id("baz")]), _.FunBody([])).name("bar:")).operator(":="))));
+        _.UnaryMsg(
+          _.Id("foo"),
+          _.AssignMsg(
+            _.Id("bar:"),
+            _.Lambda(_.FunArgs([_.Id("baz")]), _.FunBody([])).name("bar:")).operator(":=")));
       
       parser.parseFrom('foo bar baz: quux := {}', 'expr').should.eql(
-        Self(
+        _.UnaryMsg(
           _.UnaryMsg(
-            _.UnaryMsg(
-              _.Id("foo"),
-              _.Id("bar")),
-            _.AssignMsg(
-              _.Id("baz:"),
-              _.Lambda(_.FunArgs([_.Id("quux")]), _.FunBody([])).name("baz:")).operator(":="))));
+            _.Id("foo"),
+            _.Id("bar")),
+          _.AssignMsg(
+            _.Id("baz:"),
+            _.Lambda(_.FunArgs([_.Id("quux")]), _.FunBody([])).name("baz:")).operator(":=")));
     });
     
     
     it ("can parse unary messages followed by binary method definitions", function () {
       parser.parseFrom('foo + := { x | }', 'messageSend').should.eql(
-        Self(
-          _.UnaryMsg(
-            _.Id("foo"),
-            _.AssignMsg(
-              _.Id("+"), 
-              _.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")).operator(":="))));
+        _.UnaryMsg(
+          _.Id("foo"),
+          _.AssignMsg(
+            _.Id("+"), 
+            _.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")).operator(":=")));
       
       parser.parseFrom('foo bar + := {x|}', 'messageSend').should.eql(
-        Self(
+      _.UnaryMsg(
           _.UnaryMsg(
-            _.UnaryMsg(
-              _.Id("foo"),
-              _.Id("bar")),
-            _.AssignMsg(
-              _.Id("+"),
-              _.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")).operator(":="))));
+            _.Id("foo"),
+            _.Id("bar")),
+          _.AssignMsg(
+            _.Id("+"),
+            _.Lambda(_.FunArgs([_.Id("x")]), _.FunBody([])).name("+")).operator(":=")));
     });
     
     it ('can parse multiple messages', function () {
       parser.parseFrom("x += y || z", "messageSend").should.eql(
-        Self(
-          _.AssignMsg (
-            _.Id('x'), 
-            _.UnaryMsg(
-              _.Id("self"),
-              _.UnaryMsg(_.Id('y'), _.BinaryMsg(Self(_.Id('z'))).operator('||'))
-          )
-        ).operator('+=')));
+      _.AssignMsg (
+          _.Id('x'), 
+          _.UnaryMsg(_.Id('y'), _.BinaryMsg(_.Id('z')).operator('||'))
+        ).operator('+='));
     });
   });
   
@@ -390,38 +381,33 @@ describe("Parser", function () {
     
     it ("can parse keyword methods", function () {
       parser.parseFrom("foo: bar := {}", 'messageSend').should.eql(
-        Self(_.AssignMsg(_.Id("foo:"), _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")).operator(":=")));
+        _.AssignMsg(_.Id("foo:"), _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")).operator(":="));
       parser.parseFrom("foo: bar := { x }", 'messageSend').should.eql(
-        Self(
-          _.AssignMsg(
-            _.Id("foo:"), 
-            _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([Self(_.Id("x"))])).name("foo:")
-          ).operator(":=")));
+      _.AssignMsg(
+          _.Id("foo:"), 
+          _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([_.Id("x")])).name("foo:")
+        ).operator(":="));
       parser.parseFrom("foo: bar := { x\ny }", 'messageSend').should.eql(
-        Self(
-          _.AssignMsg(
-            _.Id("foo:"), 
-            _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([Self(_.Id("x")), Self(_.Id("y"))])).name("foo:")
-          ).operator(":=")));
+        _.AssignMsg(
+          _.Id("foo:"), 
+          _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([_.Id("x"), _.Id("y")])).name("foo:")
+        ).operator(":="));
       parser.parseFrom("foo: bar baz: quux := {}", 'messageSend').should.eql(
-        Self(
-          _.AssignMsg(
-            _.Id("foo:baz:"), 
-            _.Lambda(_.FunArgs([_.Id("bar"), _.Id("quux")]), _.FunBody([])).name("foo:baz:")
-          ).operator(":=")));
+        _.AssignMsg(
+          _.Id("foo:baz:"), 
+          _.Lambda(_.FunArgs([_.Id("bar"), _.Id("quux")]), _.FunBody([])).name("foo:baz:")
+        ).operator(":="));
       
       parser.parseFrom("foo: *bar := {}", 'messageSend').should.eql(
-        Self(
-          _.AssignMsg(
-            _.Id("foo:"), 
-            _.Lambda(_.FunArgs([_.VarArg(_.Id("bar"))]), _.FunBody([])).name("foo:")
-          ).operator(":=")));
+        _.AssignMsg(
+          _.Id("foo:"), 
+          _.Lambda(_.FunArgs([_.VarArg(_.Id("bar"))]), _.FunBody([])).name("foo:")
+        ).operator(":="));
       parser.parseFrom("foo: bar(2) := {}", 'messageSend').should.eql(
-        Self(
-          _.AssignMsg(
-            _.Id("foo:"), 
-            _.Lambda(_.FunArgs([_.OptArg(_.Id("bar"), _.Number("2"))]), _.FunBody([])).name("foo:")
-          ).operator(":=")));
+        _.AssignMsg(
+          _.Id("foo:"), 
+          _.Lambda(_.FunArgs([_.OptArg(_.Id("bar"), _.Number("2"))]), _.FunBody([])).name("foo:")
+        ).operator(":="));
     });
         
     it ("can parse binary methods", function () {
@@ -519,12 +505,12 @@ describe("Parser", function () {
     
     it ("can parse unary methods", function () {
       parser.parseFrom("foo := { }", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id("foo"), _.Lambda(_.FunArgs([]), _.FunBody([])).name("foo")).operator(":=")));
+        _.AssignMsg(_.Id("foo"), _.Lambda(_.FunArgs([]), _.FunBody([])).name("foo")).operator(":="));
       parser.parseFrom("foo bar := { }", "messageSend").should.eql(
-        Self(_.UnaryMsg(_.Id("foo"), _.AssignMsg(_.Id("bar"), _.Lambda(_.FunArgs([]), _.FunBody([])).name("bar")).operator(":="))));
+        _.UnaryMsg(_.Id("foo"), _.AssignMsg(_.Id("bar"), _.Lambda(_.FunArgs([]), _.FunBody([])).name("bar")).operator(":=")));
       
       parser.parseFrom("foo := 23", "messageSend").should.eql(
-        Self(_.AssignMsg(_.Id("foo"), _.Number("23")).operator(":=")));
+        _.AssignMsg(_.Id("foo"), _.Number("23")).operator(":="));
     });
   });
 });
