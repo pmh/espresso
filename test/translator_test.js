@@ -170,4 +170,23 @@ describe("Translator", function () {
       compile('foo bar: baz').should.eql('$elf["send:"]("foo")["send:args:"]("bar:", [$elf["send:"]("baz")])');
     });
   });
+
+  describe("Binary Messages", function () {
+
+    it("should translate binary messages", function() {
+      compile('foo + bar').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")])');
+    });
+
+    it("should translate chained binary messages", function() {
+      compile('foo + bar + baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])])');
+    });
+
+    it("should translate binary messages with a unary operand", function() {
+      compile('foo + bar baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:"]("baz")])');
+    });
+
+    it("should translate binary messages preceded by a unary message", function() {
+      compile('foo bar + baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])');
+    });
+  });
 });
