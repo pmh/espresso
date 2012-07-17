@@ -136,4 +136,20 @@ describe("Translator", function () {
       ));
     });
   });
+  
+  describe("Unary Messages", function () {
+
+    it("should translate a single unary message send", function() {
+      compile('foo').should.eql('$elf["send:"]("foo")');
+    });
+
+    it("should translate chained unary messages", function() {
+      compile('foo bar baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz")');
+    });
+
+    it("should translate self sends", function() {
+      compile('self foo').should.eql('self["send:"]("foo")');
+    });
+  });
+
 });
