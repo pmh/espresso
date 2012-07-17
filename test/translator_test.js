@@ -152,4 +152,22 @@ describe("Translator", function () {
     });
   });
 
+  describe("Keyword Messages", function () {
+
+    it("should translate keyword messages", function() {
+      compile('foo: bar').should.eql('$elf["send:args:"]("foo:", [$elf["send:"]("bar")])');
+    });
+
+    it("should translate keyword messages with multiple keys and args", function() {
+      compile('foo: bar baz: quux').should.eql('$elf["send:args:"]("foo:baz:", [$elf["send:"]("bar"), $elf["send:"]("quux")])');
+    });
+
+    it("should translate keyword messages with unary args", function() {
+      compile('foo: bar baz quux: qoo').should.eql('$elf["send:args:"]("foo:quux:", [$elf["send:"]("bar")["send:"]("baz"), $elf["send:"]("qoo")])');
+    });
+
+    it("should translate keyword messages preceded by a unary message", function() {
+      compile('foo bar: baz').should.eql('$elf["send:"]("foo")["send:args:"]("bar:", [$elf["send:"]("baz")])');
+    });
+  });
 });
