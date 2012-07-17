@@ -12,7 +12,7 @@ describe("Translator", function () {
   beforeEach(function () {
     translator = Translator.clone();
     parser     = Parser.clone();
-    compile    = function (input, rule) { return translator.translate(parser.parseFrom(input, rule || 'expr')); };
+    compile    = function (input, rule) { return translator.translate(parser.parseFrom(input, rule || 'topLevel')); };
   });
 
   describe("Identifiers", function () {
@@ -80,7 +80,7 @@ describe("Translator", function () {
     it("should translate empty lambdas", function() {
       compile('{}').should.eql(join_nl(
         'function () {',
-        '  var self = this.clone();',
+        '  var self = this, $elf = self.clone();',
         '  return nil;',
         '}'
       ));
@@ -89,7 +89,7 @@ describe("Translator", function () {
     it("should translate lambdas with a single expression", function() {
       compile('{ "foo" }').should.eql(join_nl(
         'function () {',
-        '  var self = this.clone();',
+        '  var self = this, $elf = self.clone();',
         '  return "foo";',
         '}'
       ));
@@ -98,7 +98,7 @@ describe("Translator", function () {
     it("should translate lambdas with multiple expressions", function() {
       compile('{ "foo"\n2 }').should.eql(join_nl(
         'function () {',
-        '  var self = this.clone();',
+        '  var self = this, $elf = self.clone();',
         '  "foo";',
         '  return 2;',
         '}'
@@ -108,8 +108,8 @@ describe("Translator", function () {
     it("should translate lambdas with a single argument", function () {
       compile('{ foo | }').should.eql(join_nl(
         'function (foo) {',
-        '  var self = this.clone();',
-        '  self["foo"] = foo;',
+        '  var self = this, $elf = self.clone();',
+        '  $elf["foo"] = foo;',
         '  return nil;',
         '}'
       ));
@@ -118,8 +118,8 @@ describe("Translator", function () {
     it("should translate lambdas with multiple arguments", function () {
       compile('{ foo, bar, baz | }').should.eql(join_nl(
         'function (foo, bar, baz) {',
-        '  var self = this.clone();',
-        '  self["foo"] = foo; self["bar"] = bar; self["baz"] = baz;',
+        '  var self = this, $elf = self.clone();',
+        '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  return nil;',
         '}'
       ));
@@ -128,8 +128,8 @@ describe("Translator", function () {
     it("should translate lambdas with arguments and expressions", function () {
       compile('{ foo, bar, baz | "foo"\n2 }').should.eql(join_nl(
         'function (foo, bar, baz) {',
-        '  var self = this.clone();',
-        '  self["foo"] = foo; self["bar"] = bar; self["baz"] = baz;',
+        '  var self = this, $elf = self.clone();',
+        '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  "foo";',
         '  return 2;',
         '}'
