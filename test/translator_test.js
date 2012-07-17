@@ -62,6 +62,17 @@ describe("Translator", function () {
     });
   });
 
+  describe("Arrays", function() {
+    
+    it("should translate empty arrays", function() {
+      compile('[]').should.eql('[]');
+    });
+
+    it("should translate populated arrays", function() {
+      compile('[1, foo bar]').should.eql('[1, $elf["send:"]("foo")["send:"]("bar")]');
+    });
+  });
+
   describe("Regular Expressions", function() {
     it("should translate simple regexps", function() {
       compile('/[a-z]{2}/').should.eql('/[a-z]{2}/');
