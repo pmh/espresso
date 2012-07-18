@@ -87,6 +87,12 @@ describe("Translator", function () {
     });
   });
 
+  describe("RawJS", function() {
+    it("should translate raw javascript", function () {
+      compile('`var foo = function () {};`').should.eql("var foo = function () {};");
+    });
+  });
+
   describe("Lambdas", function() {
     it("should translate empty lambdas", function() {
       compile('{}').should.eql(join_nl(
