@@ -96,60 +96,60 @@ describe("Translator", function () {
   describe("Lambdas", function() {
     it("should translate empty lambdas", function() {
       compile('{}').should.eql(join_nl(
-        'function () {',
+        '(function () {',
         '  var self = this, $elf = self.clone();',
         '  return nil;',
-        '}'
+        '})'
       ));
     });
 
     it("should translate lambdas with a single expression", function() {
       compile('{ "foo" }').should.eql(join_nl(
-        'function () {',
+        '(function () {',
         '  var self = this, $elf = self.clone();',
         '  return "foo";',
-        '}'
+        '})'
       ));
     });
 
     it("should translate lambdas with multiple expressions", function() {
       compile('{ "foo"\n2 }').should.eql(join_nl(
-        'function () {',
+        '(function () {',
         '  var self = this, $elf = self.clone();',
         '  "foo";',
         '  return 2;',
-        '}'
+        '})'
       ));
     });
 
     it("should translate lambdas with a single argument", function () {
       compile('{ foo | }').should.eql(join_nl(
-        'function (foo) {',
+        '(function (foo) {',
         '  var self = this, $elf = self.clone();',
         '  $elf["foo"] = foo;',
         '  return nil;',
-        '}'
+        '})'
       ));
     });
 
     it("should translate lambdas with multiple arguments", function () {
       compile('{ foo, bar, baz | }').should.eql(join_nl(
-        'function (foo, bar, baz) {',
+        '(function (foo, bar, baz) {',
         '  var self = this, $elf = self.clone();',
         '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  return nil;',
-        '}'
+        '})'
       ));
     });
 
     it("should translate lambdas with arguments and expressions", function () {
       compile('{ foo, bar, baz | "foo"\n2 }').should.eql(join_nl(
-        'function (foo, bar, baz) {',
+        '(function (foo, bar, baz) {',
         '  var self = this, $elf = self.clone();',
         '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  "foo";',
         '  return 2;',
-        '}'
+        '})'
       ));
     });
   });
