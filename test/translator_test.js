@@ -97,7 +97,7 @@ describe("Translator", function () {
     it("should translate empty lambdas", function() {
       compile('{}').should.eql(join_nl(
         '(function () {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  return nil;',
         '})'
       ));
@@ -106,7 +106,7 @@ describe("Translator", function () {
     it("should translate lambdas with a single expression", function() {
       compile('{ "foo" }').should.eql(join_nl(
         '(function () {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  return "foo";',
         '})'
       ));
@@ -115,7 +115,7 @@ describe("Translator", function () {
     it("should translate lambdas with multiple expressions", function() {
       compile('{ "foo"\n2 }').should.eql(join_nl(
         '(function () {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  "foo";',
         '  return 2;',
         '})'
@@ -125,7 +125,7 @@ describe("Translator", function () {
     it("should translate lambdas with a single argument", function () {
       compile('{ foo | }').should.eql(join_nl(
         '(function (foo) {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  $elf["foo"] = foo;',
         '  return nil;',
         '})'
@@ -135,7 +135,7 @@ describe("Translator", function () {
     it("should translate lambdas with multiple arguments", function () {
       compile('{ foo, bar, baz | }').should.eql(join_nl(
         '(function (foo, bar, baz) {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  return nil;',
         '})'
@@ -145,7 +145,7 @@ describe("Translator", function () {
     it("should translate lambdas with arguments and expressions", function () {
       compile('{ foo, bar, baz | "foo"\n2 }').should.eql(join_nl(
         '(function (foo, bar, baz) {',
-        '  var self = this, $elf = self.clone();',
+        '  var self = this.context, $elf = self.clone(self.context);',
         '  $elf["foo"] = foo; $elf["bar"] = bar; $elf["baz"] = baz;',
         '  "foo";',
         '  return 2;',
