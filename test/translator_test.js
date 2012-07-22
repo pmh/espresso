@@ -206,4 +206,64 @@ describe("Translator", function () {
       compile('foo bar + baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])');
     });
   });
+
+  describe("Assignment", function () {
+
+    it("should translate unary assignment", function () {
+      compile('foo := bar').should.eql('$elf["send:args:"](":=", ["foo", $elf["send:"]("bar")])')
+      compile('foo bar := baz').should.eql('$elf["send:"]("foo")["send:args:"](":=", ["bar", $elf["send:"]("baz")])')
+    });
+
+    it("should translate keyword assignment", function () {
+      compile('foo: bar := {}').should.eql(join_nl(
+        '$elf["send:args:"](":=", ["foo:", (function (bar) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["bar"] = bar;',
+        '  return nil;',
+        '})])'
+      ));
+
+      compile('foo: bar baz: quux := {}').should.eql(join_nl(
+        '$elf["send:args:"](":=", ["foo:baz:", (function (bar, quux) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["bar"] = bar; $elf["quux"] = quux;',
+        '  return nil;',
+        '})])'
+      ));
+
+      compile('foo bar: baz := {}').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:args:"](":=", ["bar:", (function (baz) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["baz"] = baz;',
+        '  return nil;',
+        '})])'
+      ));
+    });
+
+    it("should translate binary assignment", function () {
+      compile('+ := { x | }').should.eql(join_nl(
+        '$elf["send:args:"](":=", ["+", (function (x) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["x"] = x;',
+        '  return nil;',
+        '})])'
+      ));
+
+      compile('foo + := { x | }').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:args:"](":=", ["+", (function (x) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["x"] = x;',
+        '  return nil;',
+        '})])'
+      ));
+
+      compile('foo bar + := { x | }').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:"]("bar")["send:args:"](":=", ["+", (function (x) {',
+        '  var self = this.context, $elf = self.clone(self.context);',
+        '  $elf["x"] = x;',
+        '  return nil;',
+        '})])'
+      ));
+    });
+  });
 });
