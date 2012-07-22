@@ -10,8 +10,8 @@ var Translator = require('../lib/grammars/translator.ojs')
 describe("Translator", function () {
   var translator, parser, compile;
   beforeEach(function () {
-    translator = Translator.clone();
-    parser     = Parser.clone();
+    translator = Object.create(Translator);
+    parser     = Object.create(Parser);
     compile    = function (input, rule) { return translator.translate(parser.parseFrom(input, rule || 'topLevel')); };
   });
 

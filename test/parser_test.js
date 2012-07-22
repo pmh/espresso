@@ -8,7 +8,7 @@ var Parser = require('../lib/grammars/parser.ojs')
 describe("Parser", function () {
   var parser;
   beforeEach(function () {
-    parser = Parser.clone();
+    parser = Object.create(Parser);
   });
   
   describe("identifier rule", function () {
