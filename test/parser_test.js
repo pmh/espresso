@@ -33,8 +33,8 @@ describe("Parser", function () {
       parser.parseFrom("$foo", 'identifier').should.eql(_.Id("$foo"));
     });
     
-    it ("can parse identifiers containing with digits, $ and _", function () {
-      parser.parseFrom("foo_123$", 'identifier').should.eql(_.Id("foo_123$"));
+    it ("can parse identifiers containing with digits, $, - and _", function () {
+      parser.parseFrom("foo-bar_123$", 'identifier').should.eql(_.Id("foo-bar_123$"));
     });
     
     it ("ignores spaces", function () {
