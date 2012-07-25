@@ -10,6 +10,13 @@ describe("Parser", function () {
   beforeEach(function () {
     parser = Object.create(Parser);
   });
+
+  describe("require rule", function () {
+
+    it("can parse require expressions", function() {
+      parser.parseFrom('require: "./foo/bar.es"', 'expr').should.eql(_.Require().path("./foo/bar.es"));
+    });
+  });
   
   describe("identifier rule", function () {
     

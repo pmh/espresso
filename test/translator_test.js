@@ -15,6 +15,30 @@ describe("Translator", function () {
     compile    = function (input, rule) { return translator.translate(parser.parseFrom(input, rule || 'topLevel')); };
   });
 
+  describe("Require", function () {
+
+    it("should compile espresso files", function() {
+      compile('require: "test/fixtures/foo.es" ; 12').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:args:"]("bar:", ["baz"]);',
+        '12'
+      ));
+    });
+
+    it("should assume it's and espresso file", function () {
+      compile('require: "test/fixtures/foo" ; 12').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:args:"]("bar:", ["baz"]);',
+        '12'
+      ));
+    });
+
+    it("should 'compile' javascript files", function () {
+      compile('require: "test/fixtures/foo.js" ; 12').should.eql(join_nl(
+        'console.log("foo");',
+        '12'
+      ));
+    });
+  });
+
   describe("Identifiers", function () {
 
     it("should translate identifiers", function() {
