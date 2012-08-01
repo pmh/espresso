@@ -5,26 +5,31 @@ var EObject   = Object.prototype,
     ENumber   = Number.prototype,
     $elf      = EObject;
 
-EObject["send:"] = function (slot_name) {
-  return this["send:args:"](slot_name, []);
+var method = function (body) {
+  body.type = "Method";
+  return body;
 };
 
-EObject["send:args:"] = function (slot_name, args) {
+EObject["send:"] = method(function (slot_name) {
+  return this["send:args:"](slot_name, []);
+});
+
+EObject["send:args:"] = method(function (slot_name, args) {
   var slot = this[slot_name];
   if (slot) {
-    return slot.type === "Function" ? slot.apply(this, args) : slot;
+    return (slot.type === "Method") ? slot.apply(this, args) : slot;
   }
-};
+});
 
-EObject["clone"] = function (ctx) {
-  var clone = this["clone:"](function () {});
+EObject["clone"] = method(function (ctx) {
+  var clone = this["clone:"]([function () {}]);
   if (ctx) clone.context = ctx;
   return clone;
-};
+});
 
-EObject["clone:"] = function (init) {
+EObject["clone:"] = method(function (init) {
   var obj     = Object.create(this);
-  obj.init    = init;
+  obj.init    = init[0];
   obj.proto   = this;
   obj.context = obj;
   
@@ -32,40 +37,45 @@ EObject["clone:"] = function (init) {
   obj.init.call(obj);
   
   return obj;
-};
+});
 
-EObject.init = function () {};
+EObject.init = method(function () {});
 
-EObject[":="] = function (name, expr) {
+EObject["set:to:"] = method(function (name, expr) {
   this[name] = expr;
   if (name.match(/^[A-Z]/)) this[name].type = name;
-};
+});
 
-EObject.println = function () {
+EObject.println = method(function () {
   console.log(this["valueOf"]());
   return this;
-};
+});
 
 EObject.type = "Object";
 
-EString.println = function () {
+EString.println = method(function () {
   console.log('"' + this.toString() + '"');
   return this;
-};
+});
 
 EString.type = "String";
 
-EFunction.println = function () {
+EFunction.println = method(function () {
   console.log(this.toString());
   return this;
-};
+});
 
 EFunction.type = "Function";
 
-ENumber["-"] = function (x) { return this - x; };
-ENumber["*"] = function (x) { return this * x; };
+ENumber["-"] = method(function (x) { return this - x; });
+ENumber["*"] = method(function (x) { return this * x; });
 ENumber.type = "Number";
 
 $elf[ "Object"  ] = EObject;
+$elf[ "Lambda"  ] = EFunction;
 $elf[ "nil"     ] = EObject.clone()
 $elf[ "context" ] = EObject`
+
+Lambda call: *args := `this.apply(this.__context, args)`
+
+Lambda call: *args with-context: ctx := `this.apply($elf.ctx, args)`

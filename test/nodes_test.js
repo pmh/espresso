@@ -142,12 +142,12 @@ describe('Array', function () {
 
 describe('KeywordMsg', function () {
   it ("should set it's name to the concatenated value of all the keyword nodes", function () {
-    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar"), _.Keyword(_.Id("baz")), _.Id("quux")]);
+    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), [_.Id("bar")], _.Keyword(_.Id("baz")), [_.Id("quux")]]);
     token.name().should.eql('foo:baz:');
   });
   
   it ("should append all non keyword nodes", function () {
-    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), _.Id("bar"), _.Keyword(_.Id("baz")), _.Id("quux")]);
-    token.slice(2).should.eql([_.Id("bar"), _.Id("quux")]);
+    var token = _.KeywordMsg([_.Keyword(_.Id("foo")), [_.Id("bar")], _.Keyword(_.Id("baz")), [_.Id("quux")]]);
+    token.slice(2).should.eql([_.KeywordArg([_.Id("bar")]), _.KeywordArg([_.Id("quux")])]);
   });
 });
