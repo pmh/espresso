@@ -103,6 +103,21 @@ describe("Parser", function () {
       parser.parseFrom('    "foo bar"   ', 'string').should.eql(_.String("foo bar"));
     });
   });
+
+  describe("symbol rule", function() {
+    
+    it ("can parse simple symbols", function () {
+      parser.parseFrom("'foo", 'symbol').should.eql(_.String("foo"));
+    });
+    
+    it ("can parse symbols with special chars", function() {
+      parser.parseFrom("'$foo:bar", 'symbol').should.eql(_.String('$foo:bar'));
+    });
+    
+    it ("ignores spaces", function() {
+      parser.parseFrom("    'foo  bar ", 'symbol').should.eql(_.String("foo"));
+    });
+  });
   
   describe("regexp rule", function() {
     
