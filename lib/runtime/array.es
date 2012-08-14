@@ -6,8 +6,10 @@ Array empty? := length == 0
 
 Array join: separator := `this.join(separator)`
 
-Array push: element := {
-  `this.push(element[0])`
+Array push: *elements := {
+  elements each: { element |
+    `self.push($elf.element)`
+  }
   self
 }
 
