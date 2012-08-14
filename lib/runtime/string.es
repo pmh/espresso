@@ -5,7 +5,7 @@ String println := {
   self
 }
 
-String to-s := `self.valueOf()`
+String to-s := `'"' + self.valueOf() + '"'`
 String + str := `self + str["to-s"]()`
 
 String match: regex := `self.match(regex[0]) || nil`
