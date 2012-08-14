@@ -37,6 +37,8 @@ Object true?  = true
 Object false? = false
 Object nil?   = false
 
+Object extend: Enumerable
+
 Object to-s := {
   slots = []
   self each: { k, v | 
