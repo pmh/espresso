@@ -19,17 +19,17 @@ describe("Translator", function () {
 
     it("should compile espresso files", function() {
       compile('require: "test/fixtures/foo.es" ; 12').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:args:"]("bar:", [["baz"]]);',
+        '$elf["send:"]("foo")["send:args:"]("bar:", [["baz"]]);;',
         '',
-        '12'
+        '12;'
       ));
     });
 
     it("should assume it's and espresso file", function () {
       compile('require: "test/fixtures/foo" ; 12').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:args:"]("bar:", [["baz"]]);',
+        '$elf["send:"]("foo")["send:args:"]("bar:", [["baz"]]);;',
         '',
-        '12'
+        '12;'
       ));
     });
 
@@ -37,7 +37,7 @@ describe("Translator", function () {
       compile('require: "test/fixtures/foo.js" ; 12').should.eql(join_nl(
         'console.log("foo");',
         '',
-        '12'
+        '12;'
       ));
     });
   });
@@ -55,37 +55,37 @@ describe("Translator", function () {
 
   describe("Numbers", function () {
     it("should translate integers", function() {
-      compile("2").should.eql("2");
+      compile("2").should.eql("2;");
     });
 
     it("should translate negative integers", function() {
-      compile("-2").should.eql("-2");
+      compile("-2").should.eql("-2;");
     });
 
     it("should translate floating points", function() {
-      compile("2.345").should.eql("2.345");
+      compile("2.345").should.eql("2.345;");
     });
 
     it("should translate negative floating points", function() {
-      compile("-2.345").should.eql("-2.345");
+      compile("-2.345").should.eql("-2.345;");
     });
 
     it("should translate underscore separated numbers", function() {
-      compile("2_000_000").should.eql("2000000");
+      compile("2_000_000").should.eql("2000000;");
     });
   });
 
   describe("Strings", function() {
     it ("should translate regular strings", function () {
-      compile('"foo bar"').should.eql('"foo bar"');
+      compile('"foo bar"').should.eql('"foo bar";');
     });
     
     it ("should translate escaped strings", function() {
-      compile('"foo \\"bar\\""').should.eql('"foo \\"bar\\""');
+      compile('"foo \\"bar\\""').should.eql('"foo \\"bar\\"";');
     });
 
     it("should translate multi-line strings", function() {
-      compile('"foo\nbar\nbaz"').should.eql('"foo\\nbar\\nbaz"')
+      compile('"foo\nbar\nbaz"').should.eql('"foo\\nbar\\nbaz";')
     });
     
     it ("should translate interpolated strings", function () {
@@ -96,31 +96,31 @@ describe("Translator", function () {
   describe("Arrays", function() {
     
     it("should translate empty arrays", function() {
-      compile('[]').should.eql('[]');
+      compile('[]').should.eql('[];');
     });
 
     it("should translate populated arrays", function() {
-      compile('[1, foo bar]').should.eql('[1, $elf["send:"]("foo")["send:"]("bar")]');
+      compile('[1, foo bar]').should.eql('[1, $elf["send:"]("foo")["send:"]("bar")];');
     });
   });
 
   describe("Regular Expressions", function() {
     it("should translate simple regexps", function() {
-      compile('/[a-z]{2}/').should.eql('/[a-z]{2}/');
+      compile('/[a-z]{2}/').should.eql('/[a-z]{2}/;');
     });
 
     it("should translate regexps with modifier flags", function() {
-      compile('/[a-z]{2}/gi').should.eql('/[a-z]{2}/gi');
+      compile('/[a-z]{2}/gi').should.eql('/[a-z]{2}/gi;');
     });
 
     it("should translate regexps with escape sequences", function() {
-      compile('/\\{/').should.eql('/\\{/');
+      compile('/\\{/').should.eql('/\\{/;');
     });
   });
 
   describe("RawJS", function() {
     it("should translate raw javascript", function () {
-      compile('`var foo = function () {};`').should.eql("var foo = function () {};");
+      compile('`var foo = function () {}`').should.eql("var foo = function () {};");
     });
   });
 
@@ -130,7 +130,7 @@ describe("Translator", function () {
         '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function () {',
         '  var $elf = this.clone();',
         '  return nil;',
-        '})'
+        '});'
       ));
     });
 
@@ -139,7 +139,7 @@ describe("Translator", function () {
         '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function () {',
         '  var $elf = this.clone();',
         '  return "foo";',
-        '})'
+        '});'
       ));
     });
 
@@ -149,7 +149,7 @@ describe("Translator", function () {
         '  var $elf = this.clone();',
         '  "foo";',
         '  return 2;',
-        '})'
+        '});'
       ));
     });
 
@@ -159,7 +159,7 @@ describe("Translator", function () {
         '  var $elf = this.clone();',
         '  $elf["foo"] = (foo && foo.type === "Array") ? foo[0] : ((typeof foo !== "undefined") ? foo : nil);',
         '  return nil;',
-        '})'
+        '});'
       ));
     });
 
@@ -171,7 +171,7 @@ describe("Translator", function () {
           '$elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
         '  return nil;',
-        '})'
+        '});'
       ));
     });
 
@@ -184,7 +184,7 @@ describe("Translator", function () {
           '$elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
         '  "foo";',
         '  return 2;',
-        '})'
+        '});'
       ));
     });
   });
@@ -192,61 +192,61 @@ describe("Translator", function () {
   describe("Unary Messages", function () {
 
     it("should translate a single unary message send", function() {
-      compile('foo').should.eql('$elf["send:"]("foo")');
+      compile('foo').should.eql('$elf["send:"]("foo");');
     });
 
     it("should translate chained unary messages", function() {
-      compile('foo bar baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz")');
+      compile('foo bar baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
     });
 
     it("should translate self sends", function() {
-      compile('self foo').should.eql('self["send:"]("foo")');
+      compile('self foo').should.eql('self["send:"]("foo");');
     });
   });
 
   describe("Keyword Messages", function () {
 
     it("should translate keyword messages", function() {
-      compile('foo: bar').should.eql('$elf["send:args:"]("foo:", [[$elf["send:"]("bar")]])');
+      compile('foo: bar').should.eql('$elf["send:args:"]("foo:", [[$elf["send:"]("bar")]]);');
     });
 
     it("should translate keyword messages with multiple keys and args", function() {
-      compile('foo: bar baz: quux').should.eql('$elf["send:args:"]("foo:baz:", [[$elf["send:"]("bar")], [$elf["send:"]("quux")]])');
+      compile('foo: bar baz: quux').should.eql('$elf["send:args:"]("foo:baz:", [[$elf["send:"]("bar")], [$elf["send:"]("quux")]]);');
     });
 
     it("should translate keyword messages with unary args", function() {
-      compile('foo: bar baz quux: qoo').should.eql('$elf["send:args:"]("foo:quux:", [[$elf["send:"]("bar")["send:"]("baz")], [$elf["send:"]("qoo")]])');
+      compile('foo: bar baz quux: qoo').should.eql('$elf["send:args:"]("foo:quux:", [[$elf["send:"]("bar")["send:"]("baz")], [$elf["send:"]("qoo")]]);');
     });
 
     it("should translate keyword messages preceded by a unary message", function() {
-      compile('foo bar: baz').should.eql('$elf["send:"]("foo")["send:args:"]("bar:", [[$elf["send:"]("baz")]])');
+      compile('foo bar: baz').should.eql('$elf["send:"]("foo")["send:args:"]("bar:", [[$elf["send:"]("baz")]]);');
     });
   });
 
   describe("Binary Messages", function () {
 
     it("should translate binary messages", function() {
-      compile('foo + bar').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")])');
+      compile('foo + bar').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")]);');
     });
 
     it("should translate chained binary messages", function() {
-      compile('foo + bar + baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])])');
+      compile('foo + bar + baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])]);');
     });
 
     it("should translate binary messages with a unary operand", function() {
-      compile('foo + bar baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:"]("baz")])');
+      compile('foo + bar baz').should.eql('$elf["send:"]("foo")["send:args:"]("+", [$elf["send:"]("bar")["send:"]("baz")]);');
     });
 
     it("should translate binary messages preceded by a unary message", function() {
-      compile('foo bar + baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")])');
+      compile('foo bar + baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:args:"]("+", [$elf["send:"]("baz")]);');
     });
   });
 
   describe("Assignment", function () {
 
     it("should translate unary assignment", function () {
-      compile('foo = bar').should.eql('$elf["send:args:"]("set:to:", ["foo", $elf["send:"]("bar")])')
-      compile('foo bar = baz').should.eql('$elf["send:"]("foo")["send:args:"]("set:to:", ["bar", $elf["send:"]("baz")])')
+      compile('foo = bar').should.eql('$elf["send:args:"]("set:to:", ["foo", $elf["send:"]("bar")]);')
+      compile('foo bar = baz').should.eql('$elf["send:"]("foo")["send:args:"]("set:to:", ["bar", $elf["send:"]("baz")]);')
     });
 
     it("should translate keyword assignment", function () {
@@ -256,7 +256,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:", [bar]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
 
       compile('foo: bar baz: quux := {}').should.eql(join_nl(
@@ -266,7 +266,7 @@ describe("Translator", function () {
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["quux"] = (quux && quux.type === "Array") ? quux[0] : ((typeof quux !== "undefined") ? quux : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
 
       compile('foo bar: baz := {}').should.eql(join_nl(
@@ -275,7 +275,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("bar:", [baz]); })',
         '  $elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
     });
 
@@ -286,7 +286,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
 
       compile('foo + x := {}').should.eql(join_nl(
@@ -295,7 +295,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
 
       compile('foo bar + x := {}').should.eql(join_nl(
@@ -304,7 +304,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))])'
+        '}))]);'
       ));
     });
   });
