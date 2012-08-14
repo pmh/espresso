@@ -47,6 +47,10 @@ describe("Translator", function () {
     it("should translate identifiers", function() {
       compile('foo', "identifier").should.eql("foo");
     });
+
+    it("should prefix call with an underscore to avoid conflicts", function () {
+      compile('call', "identifier").should.eql("_call");
+    });
   });
 
   describe("Numbers", function () {
