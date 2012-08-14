@@ -51,3 +51,11 @@ Object println := {
   `console.log(this["to-s"]())`
   self
 }
+
+Object && other := {
+  self if_true: {
+    other if_true: { true } if_false: { false }
+  } if_false: {
+    false
+  }
+}
