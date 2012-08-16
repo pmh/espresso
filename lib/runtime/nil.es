@@ -7,8 +7,10 @@ nil true?  = false
 nil false? = true
 nil nil? = true
 nil unknown-slot: slot args: args := nil
-nil to-s := "nil"
+nil to-s := type value-of
 nil println := nil to-s println
 
-nil toString = `nil["to-s"]`
-nil inspect  = `nil["to-s"]`
+nil type = "nil"
+
+nil toString := nil to-s
+nil inspect  := nil to-s
