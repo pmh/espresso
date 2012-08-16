@@ -28,10 +28,10 @@ Object unknown-slot: slot args: args := nil
 
 Object == expr := `this.valueOf() === $elf.expr.valueOf()`
 
-Object if_true:  blk := blk call: nil
+Object if_true:  blk := blk call
 Object if_false: blk := nil
 
-Object if_true:  blk if_false: _ := blk call: nil
+Object if_true:  blk if_false: _ := blk call
 
 Object true?  = true
 Object false? = false
@@ -44,11 +44,13 @@ Object to-s := {
   self each: { k, v | 
     slots push: "#{k} => #{v type}" 
   }
-  "<#{type} [\"#{(slots) join: "\", \""}\"]>"
+  "<#{type} [#{(slots) join: ", "}]>"
 }
 
+Object value-of := self.valueOf()
+
 Object println := {
-  `console.log(this["to-s"]())`
+  .console.log(self to-s)
   self
 }
 
@@ -57,5 +59,13 @@ Object && other := {
     other if_true: { true } if_false: { false }
   } if_false: {
     false
+  }
+}
+
+Object || other := {
+  self if_true: {
+    self
+  } if_false: {
+    other if_true: { self } if_false: { nil }
   }
 }

@@ -1,21 +1,23 @@
 Array type = "Array"
 
-Array length := `this.length`
+Array length := self.length
 
 Array empty? := length == 0
 
-Array join: separator := `this.join(separator)`
+Array join: separator := self.join(separator)
 
 Array push: *elements := {
   elements each: { element |
-    `self.push($elf.element)`
+    self.push(element)
   }
   self
 }
 
 Array each: block := {
-  `for (var i = 0; i < this.length; i++) block[0]["call:"]([this[i], i])`
-  `this`
+  `for (var i = 0; i < this.length; i++) {`
+    block call: self[i], .i
+  `}`
+  self
 }
 
 Array extend: Enumerable
