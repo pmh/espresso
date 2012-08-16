@@ -228,6 +228,21 @@ describe("Translator", function () {
     });
   });
   
+  describe("Maps", function () {
+
+    it("should translate empty maps", function() {
+      compile('#{}').should.eql('({});');
+    });
+
+    it("should translate with a single key/value pair", function() {
+      compile('#{ foo: "bar" }').should.eql('({"foo": "bar"});');
+    });
+
+    it("should translate with multiple key/value pairs", function() {
+      compile('#{ foo: "bar", baz: 23 }').should.eql('({"foo": "bar", "baz": 23});');
+    });
+  });
+
   describe("Unary Messages", function () {
 
     it("should translate a single unary message send", function() {
