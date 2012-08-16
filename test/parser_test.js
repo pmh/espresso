@@ -230,6 +230,21 @@ describe("Parser", function () {
     })
   });
 
+  describe("js interop rule", function () {
+    it ("can parse js interop expressions", function () {
+      parser.parseFrom(".foo", "messageSend").should.eql(_.DotMsg(_.Id("foo")));
+      parser.parseFrom(".foo.bar", "messageSend").should.eql(_.DotMsg(_.MemberMsg(_.Id("foo")).name("bar")));
+      parser.parseFrom(".foo()", "messageSend").should.eql(_.DotMsg(_.CallMsg(_.Id("foo"), [])));
+
+      parser.parseFrom("foo", "messageSend").should.eql(_.Id("foo"));
+      parser.parseFrom("foo.bar", "messageSend").should.eql(_.MemberMsg(_.Id("foo")).name("bar"));
+      parser.parseFrom("foo()", "messageSend").should.eql(_.CallMsg(_.Id("foo"), []));
+
+      parser.parseFrom('.foo["bar"]', "messageSend").should.eql(_.DotMsg(_.MemberMsg(_.Id("foo"), _.String("bar"))));
+      parser.parseFrom('foo["bar"]', "messageSend").should.eql(_.MemberMsg(_.Id("foo"), _.String("bar")));
+    });
+  });
+
   describe("message send rule", function() {
     it ("can parse assignment", function() {
       //parser.parseFrom("x := y", "binaryMessage").should.eql(_.BinaryMsg(_.Id('x'), _.Id('y')).operator(':=').assignment(true));

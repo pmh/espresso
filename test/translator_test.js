@@ -124,6 +124,45 @@ describe("Translator", function () {
     });
   });
 
+  describe("JS Interop", function () {
+
+    it("should translate variable references", function () {
+      compile('.foo').should.eql("foo;");
+    });
+
+    it("should translate variable chaining", function () {
+      compile('.foo.bar').should.eql("foo.bar;");
+    });
+
+    it("should translate function invocations", function () {
+      compile('.foo()').should.eql("foo();");
+    });
+
+    it("should translate function invocations with arguments", function () {
+      compile('.foo(.x, y, .z)').should.eql('foo(x, $elf["send:"]("y"), z);');
+    });
+
+    it("should translate function chains", function () {
+      compile('.foo().bar()').should.eql("foo().bar();");
+    });
+
+    it("should translate variable and function chains", function () {
+      compile('.foo.bar()').should.eql("foo.bar();");
+    });
+
+    it("should translate computed access", function () {
+      compile('.foo["bar"]').should.eql('foo["bar"];');
+    });
+
+    it("should translate chained computed access", function () {
+      compile('.foo["bar"]["baz"]').should.eql('foo["bar"]["baz"];');
+    });
+
+    it("should translate chained computed access, variables and function invocations", function () {
+      compile('.foo["bar"].baz()').should.eql('foo["bar"].baz();');
+    });
+  });
+
   describe("Lambdas", function() {
     it("should translate empty lambdas", function() {
       compile('{}').should.eql(join_nl(
