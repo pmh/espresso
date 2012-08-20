@@ -72,9 +72,14 @@ Object inherits?: object := {
   (self proto) if_true: {
     (self proto == object) || forward
   } if_false: { false }
-}}
+}
 
 Object throw: message := {
   `throw message`
   nil
+}
+
+Object replace-delegate: original with: delegate := {
+  self unextend: original
+  self   extend: delegate
 }
