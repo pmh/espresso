@@ -15,3 +15,4 @@ Array   = .EArray
 Boolean = .EBoolean
 RegExp  = .ERegex
 nil     = .nil
+traits  = Object clone
