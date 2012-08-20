@@ -18,7 +18,7 @@ Object slots := {
   slots
 }
 
-Object delegates = []
+Object delegates = [Lobby]
 Object extend:   delegate := self delegates push: delegate
 Object unextend: delegate := {
   `for (var i = 0; i < self.delegates.length; i++) if (self.delegates[i] === delegate[0]) self.delegates = self.delegates.slice(i-1, i);`
@@ -40,11 +40,7 @@ Object nil?   = false
 Object extend: Enumerable
 
 Object to-s := {
-  slots = []
-  self each: { k, v | 
-    slots push: "#{k} => #{v type}" 
-  }
-  "<#{type} [#{(slots) join: ", "}]>"
+  "<#{type} [#{(self map: { k | k }) join: ", "}]>"
 }
 
 Object value-of := self.valueOf()
@@ -66,6 +62,14 @@ Object || other := {
   self if_true: {
     self
   } if_false: {
-    other if_true: { self } if_false: { nil }
+    other if_true: { other } if_false: { false }
   }
+}
+
+Object proto = nil
+
+Object inherits?: object := {
+  (self proto) if_true: {
+    (self proto == object) || forward
+  } if_false: { false }
 }
