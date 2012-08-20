@@ -313,6 +313,15 @@ describe("Translator", function () {
         '}))]);'
       ));
 
+      compile('clone: bar := {}').should.eql(join_nl(
+        '$elf["send:args:"]("set:to:", ["clone:", (function(body) { body.type = "Method"; return body; })((function (bar) {',
+        "  var self = this, $elf = Object.create(self); $elf.proto = self; $elf.delegates = [];",
+        '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("clone:", [bar]); })',
+        '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
+        '  return nil;',
+        '}))]);'
+      ));
+
       compile('foo: bar baz: quux := {}').should.eql(join_nl(
         '$elf["send:args:"]("set:to:", ["foo:baz:", (function(body) { body.type = "Method"; return body; })((function (bar, quux) {',
         '  var self = this, $elf = self.clone();',
