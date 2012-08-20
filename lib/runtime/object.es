@@ -83,3 +83,11 @@ Object replace-delegate: original with: delegate := {
   self unextend: original
   self   extend: delegate
 }
+
+Object perform: selector := {
+  self send: selector
+}
+
+Object perform: selector args: *args := {
+  self["send:args:"](selector, args)
+}
