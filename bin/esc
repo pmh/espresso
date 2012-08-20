@@ -12,11 +12,22 @@ program
   .option( '-c, --compile' , 'compile an .es program into a .js file'   )
   .parse(process.argv);
 
-var source = espresso.compileFile(program.args[0], "utf8");
+if (program.args[0]) {
+  var source = espresso.compileFile(program.args[0], "utf8");
 
-if (program.ast)     espresso.ast.print_tree();
-if (program.print)   console.log(source);
-if (program.compile) {fs.writeFileSync(process.argv[2].replace('.es', '.js'), source, 'utf8');}
-if (program.eval)    eval(source);
+  if (program.ast)     espresso.ast.print_tree();
+  if (program.print)   console.log(source);
+  if (program.compile) {fs.writeFileSync(process.argv[2].replace('.es', '.js'), source, 'utf8');}
+  if (program.eval)    eval(source);
 
-if (program.rawArgs.length === 3) eval(source);
+  if (program.rawArgs.length === 3) eval(source);
+}
+
+if (program.rawArgs.length === 2) {
+  require("repl").start("> ", null, eval_espresso);
+  eval(espresso.compile(""));
+}
+
+function eval_espresso(cmd, context, filename, callback) {
+  callback(null, eval(espresso.compile(cmd.substr(1, cmd.length - 2), {skip_runtime: true})));
+}
