@@ -1,4 +1,5 @@
 require: "lib/runtime/core"
+require: "lib/runtime/lobby"
 require: "lib/runtime/object"
 require: "lib/runtime/lambda"
 require: "lib/runtime/number"

@@ -5,7 +5,7 @@ var EObject   = Object.prototype,
     ENumber   = Number.prototype,
     EArray    = Array.prototype,
     ERegex    = RegExp.prototype,
-    $elf      = EObject;
+    nil       = Object.create(EObject),
     self      = EObject;
 
 var method = function (body) {
@@ -19,12 +19,14 @@ EObject["lookup:"] = method(function (slot_name) {
   if (typeof slot !== "undefined") {
     return slot;
   } else {
-    for (var i = this.delegates.length - 1; i >= 0; i--){
-      if (this.delegates[i].hasOwnProperty(slot_name)) slot = this.delegates[i][slot_name];
-      if (slot) break;
-    };
+    if (this.delegates) {
+      for (var i = this.delegates.length - 1; i >= 0; i--){
+        if (this.delegates[i].hasOwnProperty(slot_name)) slot = this.delegates[i][slot_name];
+        if (slot) break;
+      };
+    }
   }
-  return typeof slot === "undefined" ? (this.proto ? this.proto["lookup:"]([slot_name]) : nil) : slot;
+  return typeof slot === "undefined" ? ((this.proto && !this.proto["nil?"]) ? this.proto["lookup:"]([slot_name]) : undefined) : slot;
 });
 
 EObject["send:"] = method(function (slot_name) {
@@ -36,7 +38,7 @@ EObject["send:args:"] = method(function (slot_name, args) {
   if (typeof slot !== "undefined") {
     return (slot.type === "Method") ? slot.apply(this, args) : slot;
   } else {
-    this["send:args:"]("unknown-slot:args:", [[slot_name], args])
+    return this["send:args:"]("unknown-slot:args:", [[slot_name], args])
   }
 });
 
@@ -74,11 +76,5 @@ EObject["set:to:"] = method(function (name, expr) {
 
 EBoolean = Boolean.prototype;
 
-$elf[ "Object"  ] = EObject;
-$elf[ "Lambda"  ] = EFunction;
-$elf[ "Number"  ] = ENumber;
-$elf[ "String"  ] = EString;
-$elf[ "Array"   ] = EArray;
-$elf[ "Boolean" ] = EBoolean;
-$elf[ "RegExp"  ] = ERegex;
-$elf[ "nil"     ] = EObject.clone()`
+nil.proto     = EObject;
+nil.delegates = [];`
