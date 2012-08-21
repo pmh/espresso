@@ -26,7 +26,10 @@ if (program.args[0]) {
 if (program.rawArgs.length === 2) {
   require("repl").start("> ", null, eval_espresso);
   eval(espresso.compile(""));
-}
+  Object.prototype.inspect = function () {
+    return this["to-s"]();
+  };
+};
 
 function eval_espresso(cmd, context, filename, callback) {
   callback(null, eval(espresso.compile(cmd.substr(1, cmd.length - 2), {skip_runtime: true})));
