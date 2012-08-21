@@ -24,6 +24,7 @@ Object unextend: delegate := {
   `for (var i = 0; i < self.delegates.length; i++) if (self.delegates[i] === delegate[0]) self.delegates = self.delegates.slice(i-1, i);`
   nil
 }
+
 Object unknown-slot: slot args: args := nil
 
 Object == expr := `this.valueOf() === $elf.expr.valueOf()`

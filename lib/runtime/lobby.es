@@ -1,12 +1,14 @@
 `$elf = Object.create(EObject)`
 
 Lobby = .$elf
+
+Lobby unknown-slot: slot args: *args := nil
+
 Lobby to-s := {
   slots = self map: { k | k }
   "Lobby\n  #{slots join: "\n  "}"
 }
 
-Lobby   = .$elf
 Object  = .EObject
 Lambda  = .EFunction
 Number  = .ENumber

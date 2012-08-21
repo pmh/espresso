@@ -16,18 +16,17 @@ var method = function (body) {
 EObject["lookup:"] = method(function (slot_name) {
   slot_name = slot_name[0]
   var slot = this[slot_name]
-  if (typeof slot !== "undefined") {
-    return slot;
-  } else {
-    if (this.delegates) {
-      for (var i = this.delegates.length - 1; i >= 0; i--){
-        if (this.delegates[i].hasOwnProperty(slot_name)) slot = this.delegates[i][slot_name];
-        if (slot) break;
-      };
-    }
+  if (typeof slot === "undefined") {
+    for (var i = this.delegates.length - 1; i >= 0; i--){
+      if (this.delegates[i].hasOwnProperty(slot_name)) slot = this.delegates[i][slot_name];
+      if (slot) break;
+    };
   }
   return typeof slot === "undefined" ? ((this.proto && !this.proto["nil?"]) ? this.proto["lookup:"]([slot_name]) : undefined) : slot;
 });
+
+nil["unknown-slot:args:"] = method(function () { return nil; });
+
 
 EObject["send:"] = method(function (slot_name) {
   return this["send:args:"](slot_name, []);
