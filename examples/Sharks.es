@@ -4,10 +4,6 @@ require: "examples/shark-roles/Dying"
 Shark = Object clone
 Shark extend: Healthy
 
-Shark hide := {
-  self replace-delegate: Dying with: Healthy
-}
-
 goblin = Shark clone
 goblin name = "Goblin Shark"
 

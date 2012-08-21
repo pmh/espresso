@@ -1,7 +1,6 @@
 
-traits Point = Object clone: {
-  self print := "#{type} => x: #{x}, y: #{y}" println
-}
+traits Point = Object clone
+traits Point print := "#{type} => x: #{x}, y: #{y}" println
 
 Point = traits Point clone: {
   self x = 23
