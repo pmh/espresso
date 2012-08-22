@@ -28,7 +28,7 @@ computed print
 ```
 
 More examples can be found in the examples/ folder.
-To try them out, clone this repository and cd into it and run:
+To try them out, clone this repository and cd into it and run (NOTE: this requires that you have nodejs v0.6.1 on your path):
 
 `./bin/esc examples/<filename>.es`
 
