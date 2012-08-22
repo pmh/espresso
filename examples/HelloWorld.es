@@ -1,7 +1,12 @@
-Greeter := Object clone
+Person = Object clone
 
-Greeter greet: name with: message := {
-  "#{message}, #{name}!" println
-}
+Person named: name := clone: { self name = name }
 
-Greeter greet: "World" with: "Hello"
+Person greet: person with: message :=
+	"#{name} says: #{message}, #{person name}!" println
+
+
+patrik = Person named: 'Patrik
+dude   = Person named: 'Dude
+
+patrik greet: dude with: "Hello"
