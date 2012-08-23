@@ -6,7 +6,7 @@ Lobby unknown-slot: slot args: *args := nil
 
 Lobby to-s := {
   slots = self map: { k | k }
-  "Lobby\n  #{slots join: "\n  "}"
+  "#{type}\n  #{slots join: "\n  "}"
 }
 
 Object  = .EObject
