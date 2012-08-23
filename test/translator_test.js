@@ -257,6 +257,37 @@ describe("Translator", function () {
       compile('foo bar baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
     });
 
+    it("should translate chained unary containing strings", function () {
+      compile('foo "bar" baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing symbols", function () {
+      compile("foo 'bar baz").should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing numbers", function () {
+      compile('foo 23 baz').should.eql('$elf["send:"]("foo")["send:"](23)["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing lambdas", function () {
+      compile('foo { "bar" } baz').should.eql(join_nl('$elf["send:"]("foo")["send:"]((function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function () {',
+      '  var $elf = this.clone();',
+      '  return "bar";',
+      '}))["send:"]("baz");'));
+    });
+
+    it("should translate chained unary containing arrays", function () {
+      compile("foo [1, 2, 3] baz").should.eql('$elf["send:"]("foo")["send:"]([1, 2, 3])["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing maps", function () {
+      compile("foo #{ foo: 'bar } baz").should.eql('$elf["send:"]("foo")["send:"](({"foo": "bar"}))["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing regexps", function () {
+      compile('foo /[a-z]+/ baz').should.eql('$elf["send:"]("foo")["send:"](/[a-z]+/)["send:"]("baz");');
+    });
+
     it("should translate self sends", function() {
       compile('self foo').should.eql('self["send:"]("foo");');
     });
