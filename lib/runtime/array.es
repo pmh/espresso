@@ -23,7 +23,6 @@ Array each: block := {
 Array extend: Enumerable
 
 Array println := {
-  "printin' arr"
   `console.log(self["to-s"]())`
   self
 }
