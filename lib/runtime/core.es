@@ -67,8 +67,8 @@ Object.defineProperty(EObject, "init", {
 });
 
 EObject["set:to:"] = method(function (name, expr) {
-  name = (name.type === "Array") ? name[0] : name
-  expr = (name.type === "Array") ? expr[0] : expr
+  name = name[0];
+  expr = expr[0];
   this[name] = expr;
   if (name.match(/^[A-Z]/)) this[name].type = name;
 
