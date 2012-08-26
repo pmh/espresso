@@ -230,6 +230,10 @@ describe("Translator", function () {
         '});'
       ));
     });
+
+    it("should translate partial lambdas", function () {
+      compile('@{* 2}').should.eql('(function () { return arguments[0]["send:args:"]("*", [2]); });');
+    });
   });
   
   describe("Maps", function () {
