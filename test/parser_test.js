@@ -2,8 +2,8 @@ require("should");
 require("ometa");
 require("../lib/espresso");
 
-var Parser = require('../lib/grammars/parser.ojs')
-	, _      = require('../lib/nodes');
+var Parser        = require('../lib/grammars/parser.ojs')
+	, _             = require('../lib/nodes');
 
 describe("Parser", function () {
   var parser;
@@ -375,7 +375,7 @@ describe("Parser", function () {
           _.Id("foo"),
           _.MethodDef(
             _.Id("bar:"),
-            _.Lambda(_.FunArgs([_.Id("baz")]), _.FunBody([])).name("bar:"))));
+            _.Lambda(_.FunArgs([_.Id("baz")]), _.FunBody([])).name("bar:")).predicates([_.Id("true")])));
       
       parser.parseFrom('foo bar baz: quux := {}', 'expr').should.eql(
         _.UnaryMsg(
@@ -384,7 +384,7 @@ describe("Parser", function () {
             _.Id("bar")),
           _.MethodDef(
             _.Id("baz:"),
-            _.Lambda(_.FunArgs([_.Id("quux")]), _.FunBody([])).name("baz:"))));
+            _.Lambda(_.FunArgs([_.Id("quux")]), _.FunBody([])).name("baz:")).predicates([_.Id("true")])));
     });
     
     
@@ -419,35 +419,50 @@ describe("Parser", function () {
     
     it ("can parse keyword methods", function () {
       parser.parseFrom("foo: bar := {}", 'messageSend').should.eql(
-        _.MethodDef(_.Id("foo:"), _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")));
+        _.MethodDef(_.Id("foo:"), _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")).predicates([_.Id("true")]));
       parser.parseFrom("foo: bar := { x }", 'messageSend').should.eql(
       _.MethodDef(
           _.Id("foo:"), 
           _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([_.Id("x")])).name("foo:")
-        ));
+        ).predicates([_.Id("true")]));
       parser.parseFrom("foo: bar := { x\ny }", 'messageSend').should.eql(
         _.MethodDef(
           _.Id("foo:"), 
           _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([_.Id("x"), _.Id("y")])).name("foo:")
-        ));
+        ).predicates([_.Id("true")]));
       parser.parseFrom("foo: bar baz: quux := {}", 'messageSend').should.eql(
         _.MethodDef(
           _.Id("foo:baz:"), 
           _.Lambda(_.FunArgs([_.Id("bar"), _.Id("quux")]), _.FunBody([])).name("foo:baz:")
-        ));
-      
+        ).predicates([_.Id("true"), _.Id("true")]));
+    });
+    
+    it ("can parse keyword methods with variadic arguments", function () {
       parser.parseFrom("foo: *bar := {}", 'messageSend').should.eql(
         _.MethodDef(
           _.Id("foo:"), 
           _.Lambda(_.FunArgs([_.VarArg(_.Id("bar"))]), _.FunBody([])).name("foo:")
-        ));
+        ).predicates([_.Id("true")]));
+    });
+    
+    it ("can parse keyword methods with optional arguments", function () {
       parser.parseFrom("foo: bar(2) := {}", 'messageSend').should.eql(
         _.MethodDef(
           _.Id("foo:"), 
           _.Lambda(_.FunArgs([_.OptArg(_.Id("bar"), _.Number("2"))]), _.FunBody([])).name("foo:")
-        ));
+        ).predicates([_.Id("true")]));
     });
-        
+
+    it ("can parse keyword methods with predicated arguments", function () {
+      parser.parseFrom("foo: bar @{understands?: 'baz} := {}", 'messageSend').should.eql(
+        _.MethodDef(
+          _.Id("foo:"), 
+          _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")
+        ).predicates([
+          _.PartialLambda(_.KeywordMsg([_.Keyword(_.Id('understands?')), [_.String("baz")]]))
+        ]));
+    })
+
     it ("can parse binary methods", function () {
       parser.parseFrom("|| lhs  := {}", 'methodDef').should.eql(
         _.MethodDef(

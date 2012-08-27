@@ -55,6 +55,11 @@ EObject["clone:"] = method(function (init) {
     value: init[0]
   });
 
+  Object.defineProperty(obj, "method-table", {
+    enumerable: false,
+    value: {}
+  });
+
   this.init.call(obj);
   obj.init.call(obj);
 
@@ -66,6 +71,11 @@ Object.defineProperty(EObject, "init", {
   value: function () {}
 });
 
+Object.defineProperty(EObject, "method-table", {
+  enumerable: false,
+  value: {}
+});
+
 EObject["set:to:"] = method(function (name, expr) {
   name = name[0];
   expr = expr[0];
@@ -75,6 +85,26 @@ EObject["set:to:"] = method(function (name, expr) {
   return expr;
 });
 
+EObject["define-method:do:"] = method(function (name, body) {
+  return this["define-method:predicates:do:"](name, [[]], body);
+});
+
+EObject["define-method:predicates:do:"] = method(function (name, predicates, body) {
+  name       = name[0];
+  body       = body[0];
+  predicates = predicates[0];
+
+  var old = this[ name ];
+
+  return this[ name ] = method(function(){
+    var args = arguments;
+    if ( args.length === body.length &&
+         predicates.every(function (c, idx) { return typeof c === "function" ? c(args[idx][0] ? args[idx][0] : args[idx]) : (c === true ? true : false); }) )
+        return body.apply( this, arguments );
+    else if ( typeof old == 'function' )
+      return old.apply( this, arguments );
+  });
+});
 EBoolean = Boolean.prototype;
 
 nil.proto     = EObject;
