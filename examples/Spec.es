@@ -4,21 +4,21 @@ Spec = Object clone
 
 Spec suite = Object clone
 Spec suite unknown-slot: slot args: *args := {
-  (slot type == "Lambda") if_true: {
-    slot call-as: self
-  } if_false: {
-    _it = clone
-    _it desc = [slot]
-    _it unknown-slot: slot args: *args := {
-      (slot type == "Lambda") if_true: {
-        "  - #{(desc join: " ")} #{slot call-as: self}" println
-      } if_false: {
-        desc push: slot
-      }
-      _it
+  _it = clone
+  _it desc = [slot]
+  _it unknown-slot: slot args: *args := {
+    (slot type == "Lambda") if_true: {
+      "  - #{(desc join: " ")} #{slot call-as: self}" println
+    } if_false: {
+      desc push: slot
     }
     _it
   }
+  _it
+}
+
+Spec suite unknown-slot: slot @{understands?: 'call} args: *args := {
+  slot call-as: self
 }
 
 Spec unknown-slot: slot args: *args := {
@@ -35,7 +35,9 @@ Matcher == other :=
 
 Object should := Matcher with-context: self
 
-describe = Spec clone
+describe := {
+  Spec clone
+}
 
 // Usage:
 
@@ -43,16 +45,16 @@ Espresso = Object clone
 ['expressive?, 'flexible?, 'awesome?] each: { slot | Espresso set: slot to: true }
 
 
-describe The-Espresso-Language {
-  is it expressive? {
+describe espresso {
+  it is expressive {
     Espresso expressive? should == true
   }
 
-  is it flexible? {
+  it is flexible {
     Espresso flexible? should == true
   }
 
-  is it awesome? {
+  but is it awesome? {
     Espresso awesome? should == true
   }
 }
