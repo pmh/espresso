@@ -2,10 +2,10 @@ require("should");
 require("ometa");
 require("../lib/espresso");
 
-var Translator = require('../lib/grammars/translator.ojs')
-  , Parser     = require('../lib/grammars/parser.ojs')
-  , join       = require('../lib/utils.js').join
-  , join_nl    = require('../lib/utils.js').join_nl
+var Translator   = require('../lib/grammars/translator.ojs')
+  , Parser       = require('../lib/grammars/parser.ojs')
+  , join         = require('../lib/utils.js').join
+  , join_nl      = require('../lib/utils.js').join_nl;
 
 describe("Translator", function () {
   var translator, parser, compile;
@@ -46,6 +46,10 @@ describe("Translator", function () {
 
     it("should translate identifiers", function() {
       compile('foo', "identifier").should.eql("foo");
+    });
+
+    it("should translate identifiers with special chars", function() {
+      compile('$foo-bar', "identifier").should.eql("$foo-bar");
     });
 
     it("should prefix call with an underscore to avoid conflicts", function () {
@@ -226,6 +230,10 @@ describe("Translator", function () {
         '});'
       ));
     });
+
+    it("should translate partial lambdas", function () {
+      compile('@{* 2}').should.eql('(function () { var $elf = arguments[0]; return $elf["send:args:"]("*", [2]); });');
+    });
   });
   
   describe("Maps", function () {
@@ -251,6 +259,37 @@ describe("Translator", function () {
 
     it("should translate chained unary messages", function() {
       compile('foo bar baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing strings", function () {
+      compile('foo "bar" baz').should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing symbols", function () {
+      compile("foo 'bar baz").should.eql('$elf["send:"]("foo")["send:"]("bar")["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing numbers", function () {
+      compile('foo 23 baz').should.eql('$elf["send:"]("foo")["send:"](23)["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing lambdas", function () {
+      compile('foo { "bar" } baz').should.eql(join_nl('$elf["send:"]("foo")["send:"]((function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function () {',
+      '  var $elf = this.clone();',
+      '  return "bar";',
+      '}))["send:"]("baz");'));
+    });
+
+    it("should translate chained unary containing arrays", function () {
+      compile("foo [1, 2, 3] baz").should.eql('$elf["send:"]("foo")["send:"]([1, 2, 3])["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing maps", function () {
+      compile("foo #{ foo: 'bar } baz").should.eql('$elf["send:"]("foo")["send:"](({"foo": "bar"}))["send:"]("baz");');
+    });
+
+    it("should translate chained unary containing regexps", function () {
+      compile('foo /[a-z]+/ baz').should.eql('$elf["send:"]("foo")["send:"](/[a-z]+/)["send:"]("baz");');
     });
 
     it("should translate self sends", function() {
@@ -299,76 +338,99 @@ describe("Translator", function () {
   describe("Assignment", function () {
 
     it("should translate unary assignment", function () {
-      compile('foo = bar').should.eql('$elf["send:args:"]("set:to:", ["foo", $elf["send:"]("bar")]);')
-      compile('foo bar = baz').should.eql('$elf["send:"]("foo")["send:args:"]("set:to:", ["bar", $elf["send:"]("baz")]);')
+      compile('foo = bar').should.eql('$elf["send:args:"]("set:to:", [["foo"], [$elf["send:"]("bar")]]);')
+      compile('foo bar = baz').should.eql('$elf["send:"]("foo")["send:args:"]("set:to:", [["bar"], [$elf["send:"]("baz")]]);')
     });
 
-    it("should translate keyword assignment", function () {
+    it("should translate keyword methods", function () {
       compile('foo: bar := {}').should.eql(join_nl(
-        '$elf["send:args:"]("set:to:", ["foo:", (function(body) { body.type = "Method"; return body; })((function (bar) {',
+        '$elf["send:args:"]("define-method:predicates:do:", [["foo:"], [[true]], [(function (bar) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:", [bar]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
 
       compile('clone: bar := {}').should.eql(join_nl(
-        '$elf["send:args:"]("set:to:", ["clone:", (function(body) { body.type = "Method"; return body; })((function (bar) {',
+        '$elf["send:args:"]("define-method:predicates:do:", [["clone:"], [[true]], [(function (bar) {',
         "  var self = this, $elf = Object.create(self); $elf.proto = self; $elf.delegates = [];",
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("clone:", [bar]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
 
       compile('foo: bar baz: quux := {}').should.eql(join_nl(
-        '$elf["send:args:"]("set:to:", ["foo:baz:", (function(body) { body.type = "Method"; return body; })((function (bar, quux) {',
+        '$elf["send:args:"]("define-method:predicates:do:", [["foo:baz:"], [[true,true]], [(function (bar, quux) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:baz:", [bar, quux]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["quux"] = (quux && quux.type === "Array") ? quux[0] : ((typeof quux !== "undefined") ? quux : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
 
       compile('foo bar: baz := {}').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:args:"]("set:to:", ["bar:", (function(body) { body.type = "Method"; return body; })((function (baz) {',
+        '$elf["send:"]("foo")["send:args:"]("define-method:predicates:do:", [["bar:"], [[true]], [(function (baz) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("bar:", [baz]); })',
         '  $elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
     });
 
-    it("should translate binary assignment", function () {
+    it("should translate predicated keyword methods", function () {
+      compile("foo: bar @{understands?: 'foobaz} baz: quux := {}").should.eql(join_nl(
+        '$elf["send:args:"]("define-method:predicates:do:", [["foo:baz:"], [[(function () { var $elf = arguments[0]; return $elf["send:args:"]("understands?:", [["foobaz"]]); }),true]], [(function (bar, quux) {',
+        '  var self = this, $elf = self.clone();',
+        '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:baz:", [bar, quux]); })',
+        '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
+          '$elf["quux"] = (quux && quux.type === "Array") ? quux[0] : ((typeof quux !== "undefined") ? quux : nil);',
+        '  return nil;',
+        '})]]);'
+      ));
+    });
+
+    it("should translate binary methods", function () {
       compile('+ x := {}').should.eql(join_nl(
-        '$elf["send:args:"]("set:to:", ["+", (function(body) { body.type = "Method"; return body; })((function (x) {',
+        '$elf["send:args:"]("define-method:predicates:do:", [["+"], [[]], [(function (x) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
 
       compile('foo + x := {}').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:args:"]("set:to:", ["+", (function(body) { body.type = "Method"; return body; })((function (x) {',
+        '$elf["send:"]("foo")["send:args:"]("define-method:predicates:do:", [["+"], [[]], [(function (x) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
 
       compile('foo bar + x := {}').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:"]("bar")["send:args:"]("set:to:", ["+", (function(body) { body.type = "Method"; return body; })((function (x) {',
+        '$elf["send:"]("foo")["send:"]("bar")["send:args:"]("define-method:predicates:do:", [["+"], [[]], [(function (x) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
         '  return nil;',
-        '}))]);'
+        '})]]);'
       ));
     });
+
+    it("should translate predicated binary methods", function () {
+      compile('foo + x @{type == "X"} := {}').should.eql(join_nl(
+        '$elf["send:"]("foo")["send:args:"]("define-method:predicates:do:", [["+"], [[(function () { var $elf = arguments[0]; return $elf["send:"]("type")["send:args:"]("==", ["X"]); })]], [(function (x) {',
+        '  var self = this, $elf = self.clone();',
+        '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
+        '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
+        '  return nil;',
+        '})]]);'
+      ));
+    })
   });
 });

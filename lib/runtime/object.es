@@ -75,6 +75,11 @@ Object inherits?: object := {
   } if_false: { false }
 }
 
+Object understands?: message := {
+  slot = self lookup: message
+  `typeof $elf.slot == "undefined" ? false : true`
+}
+
 Object throw: message := {
   `throw message`
   nil
