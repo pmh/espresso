@@ -14,5 +14,3 @@ dude   = Person named: 'Dude
 
 patrik greet: dude    with: "Hello"
 patrik greet: "World" with: "Hello"
-
-foo: bar := {}
