@@ -172,7 +172,7 @@ describe("Translator", function () {
       compile('{}').should.eql(join_nl(
         '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function () {',
         '  var $elf = this.clone();',
-        '  return nil;',
+        '  return $elf;',
         '});'
       ));
     });
@@ -201,7 +201,7 @@ describe("Translator", function () {
         '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function (foo) {',
         '  var $elf = this.clone();',
         '  $elf["foo"] = (foo && foo.type === "Array") ? foo[0] : ((typeof foo !== "undefined") ? foo : nil);',
-        '  return nil;',
+        '  return $elf;',
         '});'
       ));
     });
@@ -213,7 +213,7 @@ describe("Translator", function () {
         '  $elf["foo"] = (foo && foo.type === "Array") ? foo[0] : ((typeof foo !== "undefined") ? foo : nil); ' +
           '$elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
-        '  return nil;',
+        '  return $elf;',
         '});'
       ));
     });
@@ -348,7 +348,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:", [bar]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
 
@@ -357,7 +357,7 @@ describe("Translator", function () {
         "  var self = this, $elf = Object.create(self); $elf.proto = self; $elf.delegates = [];",
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("clone:", [bar]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
 
@@ -367,7 +367,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:baz:", [bar, quux]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["quux"] = (quux && quux.type === "Array") ? quux[0] : ((typeof quux !== "undefined") ? quux : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
 
@@ -376,7 +376,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("bar:", [baz]); })',
         '  $elf["baz"] = (baz && baz.type === "Array") ? baz[0] : ((typeof baz !== "undefined") ? baz : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
     });
@@ -388,7 +388,7 @@ describe("Translator", function () {
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:baz:", [bar, quux]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
           '$elf["quux"] = (quux && quux.type === "Array") ? quux[0] : ((typeof quux !== "undefined") ? quux : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
     });
@@ -399,7 +399,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
 
@@ -408,7 +408,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
 
@@ -417,7 +417,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
     });
@@ -428,7 +428,7 @@ describe("Translator", function () {
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
-        '  return nil;',
+        '  return $elf;',
         '})]]);'
       ));
     })
