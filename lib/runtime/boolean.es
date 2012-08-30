@@ -15,4 +15,6 @@ Boolean if_true: true_branch if_false: false_branch := {
   `this["true?"]() ? true_branch[0]["_call"]() : false_branch[0]["_call"]()`
 }
 
+Boolean == other := `self == other`
+
 Boolean to-s := self value-of

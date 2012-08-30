@@ -9,3 +9,5 @@ Lambda apply: args := self.apply(__context, args)
 Lambda apply: args as: ctx := self.apply(ctx, args)
 
 Lambda to-s := "<#{type}>"
+
+Lambda == other := `self.toString() == other.toString()`

@@ -18,6 +18,10 @@ Object slots := {
   slots
 }
 
+Object values := {
+  self map: { k, v | v }
+}
+
 Object delegates = [Lobby]
 Object extend:   delegate := self delegates push: delegate
 Object unextend: delegate := {
@@ -27,7 +31,7 @@ Object unextend: delegate := {
 
 Object unknown-slot: slot args: args := nil
 
-Object == expr := `this.valueOf() === $elf.expr.valueOf()`
+Object == expr := `this === $elf.expr`
 
 Object if_true:  blk := blk call
 Object if_false: blk := nil

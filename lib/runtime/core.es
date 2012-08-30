@@ -96,7 +96,7 @@ EObject["define-method:predicates:do:"] = method(function (name, predicates, bod
 
   var old = this[ name ];
 
-  return this[ name ] = method(function(){
+  this[ name ] = method(function(){
     var args = arguments;
     if ( args.length === body.length &&
          predicates.every(function (c, idx) { return typeof c === "function" ? c(args[idx][0] ? args[idx][0] : args[idx]) : (c === true ? true : false); }) )
@@ -104,6 +104,10 @@ EObject["define-method:predicates:do:"] = method(function (name, predicates, bod
     else if ( typeof old == 'function' )
       return old.apply( this, arguments );
   });
+
+  this[name].toString = function () { return body.toString(); };
+
+  return this[name];
 });
 EBoolean = Boolean.prototype;
 
