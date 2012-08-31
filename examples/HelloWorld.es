@@ -13,4 +13,5 @@ patrik = Person named: 'Patrik
 dude   = Person named: 'Dude
 
 patrik greet: dude    with: "Hello"
+dude   greet: patrik  with: "Hello"
 patrik greet: "World" with: "Hello"

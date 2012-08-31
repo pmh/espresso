@@ -11,7 +11,7 @@ Foo foo: Object
 Foo foo: Foo
 Foo foo: Bar
 
-Foo + other := "Adding foo to foo gives: foofoo" println
+Foo + other := "Adding foo to foo gives: 2(foo)" println
 Foo + other @{ type == "Bar" } := "Adding bar to foo gives: foobar" println
 
 Foo + Foo
