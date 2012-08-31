@@ -459,7 +459,7 @@ describe("Parser", function () {
           _.Id("foo:"), 
           _.Lambda(_.FunArgs([_.Id("bar")]), _.FunBody([])).name("foo:")
         ).predicates([
-          _.PartialLambda(_.KeywordMsg([_.Keyword(_.Id('understands?')), [_.String("baz")]]))
+          _.PartialLambda(_.FunBody([_.KeywordMsg([_.Keyword(_.Id('understands?')), [_.String("baz")]])]))
         ]));
     })
 

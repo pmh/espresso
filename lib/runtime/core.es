@@ -59,9 +59,9 @@ EObject["clone:"] = method(function (init) {
     enumerable: false,
     value: {}
   });
-
-  this.init.call(obj);
-  obj.init.call(obj);
+  
+  this.init.call(obj, obj);
+  obj.init.call(obj, obj);
 
   return obj;
 });

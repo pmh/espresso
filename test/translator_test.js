@@ -382,8 +382,14 @@ describe("Translator", function () {
     });
 
     it("should translate predicated keyword methods", function () {
+      var predicate = join_nl(
+        '(function () {',
+        '  var $elf = arguments[0];',
+        '  return $elf["send:args:"]("understands?:", [["foobaz"]]);',
+        '})');
+
       compile("foo: bar @{understands?: 'foobaz} baz: quux := {}").should.eql(join_nl(
-        '$elf["send:args:"]("define-method:predicates:do:", [["foo:baz:"], [[(function () { var $elf = arguments[0]; return $elf["send:args:"]("understands?:", [["foobaz"]]); }),true]], [(function (bar, quux) {',
+        '$elf["send:args:"]("define-method:predicates:do:", [["foo:baz:"], [[' + predicate + ',true]], [(function (bar, quux) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("foo:baz:", [bar, quux]); })',
         '  $elf["bar"] = (bar && bar.type === "Array") ? bar[0] : ((typeof bar !== "undefined") ? bar : nil); ' +
@@ -423,8 +429,15 @@ describe("Translator", function () {
     });
 
     it("should translate predicated binary methods", function () {
+      var predicate = join_nl(
+        '(function () {',
+        '  var $elf = arguments[0];',
+        '  return $elf["send:"]("type")["send:args:"]("==", ["X"]);',
+        '})'
+      );
+
       compile('foo + x @{type == "X"} := {}').should.eql(join_nl(
-        '$elf["send:"]("foo")["send:args:"]("define-method:predicates:do:", [["+"], [[(function () { var $elf = arguments[0]; return $elf["send:"]("type")["send:args:"]("==", ["X"]); })]], [(function (x) {',
+        '$elf["send:"]("foo")["send:args:"]("define-method:predicates:do:", [["+"], [[' + predicate + ']], [(function (x) {',
         '  var self = this, $elf = self.clone();',
         '  $elf.forward = (function (m) { m.type = "Method"; return m; })(function () { return self.proto["send:args:"]("+", [x]); })',
         '  $elf["x"] = (x && x.type === "Array") ? x[0] : ((typeof x !== "undefined") ? x : nil);',
