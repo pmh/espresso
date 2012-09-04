@@ -6,4 +6,4 @@ Number fib := {
   }
 }
 
-8 times: @{ fib println }
+10 fib println
