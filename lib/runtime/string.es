@@ -17,4 +17,4 @@ String <=> other :=
 
 String value-of := .this.valueOf()
 
-String match: regex := `self.match(regex[0]) || nil`
+String match: regex @{ (type == "RegExp") || (type == "String") } := `self.match(regex[0]) || nil`
