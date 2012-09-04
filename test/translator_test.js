@@ -234,7 +234,7 @@ describe("Translator", function () {
     it("should translate partial lambdas", function () {
       compile('@{* 2}').should.eql(join_nl(
         '(function () {',
-        '  var $elf = arguments[0];',
+        '  var self = this, $elf = arguments[0];',
         '  return $elf["send:args:"]("*", [2]);', '});'
       ));
     });
@@ -388,7 +388,7 @@ describe("Translator", function () {
     it("should translate predicated keyword methods", function () {
       var predicate = join_nl(
         '(function () {',
-        '  var $elf = arguments[0];',
+        '  var self = this, $elf = arguments[0];',
         '  return $elf["send:args:"]("understands?:", [["foobaz"]]);',
         '})');
 
@@ -435,7 +435,7 @@ describe("Translator", function () {
     it("should translate predicated binary methods", function () {
       var predicate = join_nl(
         '(function () {',
-        '  var $elf = arguments[0];',
+        '  var self = this, $elf = arguments[0];',
         '  return $elf["send:"]("type")["send:args:"]("==", ["X"]);',
         '})'
       );
