@@ -100,7 +100,17 @@ Object perform: selector := {
 
 Object perform: selector args: *args := {
   self["send:args:"](selector, args)
-}Object match: blk := {
+}
+
+Object delete: slot := { `delete this[slot]` ; nil }
+
+traits Match = Object clone
+traits Match when: pred do: blk := {
+  pred = ((pred type == "Array") if_true: { [pred] } if_false: { pred value-of })
+  self matchers push: clone
+}
+
+Object match: blk := {
   matcher = traits Match clone: @{ matchers = [] }
   matcher extend: self
   matcher _ = true
