@@ -8,7 +8,7 @@ Object each: iterator := {
 
 Object get: slot := {
   slot = lookup: slot
-  `if ($elf.slot.type === "Method") $elf.slot.type = "Method Object"`
+  `if ($elf.slot.type === "Method") { $elf.slot.type = "Lambda" ; $elf.slot.__context = this }`
   slot
 }
 
@@ -106,6 +106,9 @@ Object perform: selector args: *args := {
 Object delete: slot := { `delete this[slot]` ; nil }
 
 traits Match = Object clone
+
+traits Match _ = true
+
 traits Match when: pred do: blk := {
   pred = ((pred type == "Array") if_true: { [pred] } if_false: { pred value-of })
   self matchers push: clone
@@ -114,8 +117,10 @@ traits Match when: pred do: blk := {
 Object match: blk := {
   matcher = traits Match clone: @{ matchers = [] }
   matcher extend: self
-  matcher _ = true
   matchers = (blk call: matcher as: matcher)
-  match = matchers.filter({m | (self value-of == m pred value-of) }) 0 blk
-  (match understands?: 'call) if_true: { match call: self as: self } if_false: { match }
+  matchers each: { match |
+    (self value-of == match pred value-of) if_true: {
+      return! (match blk understands?: 'call) if_true: { match blk call: self } if_false: { match blk }
+    }
+  }
 }
