@@ -100,4 +100,11 @@ Object perform: selector := {
 
 Object perform: selector args: *args := {
   self["send:args:"](selector, args)
+}Object match: blk := {
+  matcher = traits Match clone: @{ matchers = [] }
+  matcher extend: self
+  matcher _ = true
+  matchers = (blk call: matcher as: matcher)
+  match = matchers.filter({m | (self value-of == m pred value-of) }) 0 blk
+  (match understands?: 'call) if_true: { match call: self as: self } if_false: { match }
 }
