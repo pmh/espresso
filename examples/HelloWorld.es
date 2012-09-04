@@ -2,8 +2,8 @@ Person = Object clone
 
 Person named: name := clone
 
-Person greet: name with: message :=
-  "#{self name} says: #{message}, #{name}!" println
+Person greet: person with: message :=
+  "#{name} says: #{message}, #{person}!" println
 
 Person greet: person @{understands?: 'name} with: message :=
   greet: person name with: message
