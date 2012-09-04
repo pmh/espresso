@@ -20,6 +20,9 @@ Array each: block := {
   self
 }
 
+Array == other := { (join: ",") value-of == (other join: ",") value-of }
+Array == other @{type == "Boolean"} := `this[other + "?"]`
+
 Array extend: Enumerable
 
 Array println := {

@@ -32,6 +32,7 @@ Object unextend: delegate := {
 Object unknown-slot: slot args: args := nil
 
 Object == expr := `this === $elf.expr`
+Object == expr @{type == "Boolean"} := `this[expr + "?"]`
 
 Object if_true:  blk := blk call
 Object if_false: blk := nil

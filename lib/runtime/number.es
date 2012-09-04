@@ -9,6 +9,7 @@ Number < lhs := `this < lhs`
 Number > lhs := `this > lhs`
 
 Number == other := `self == other`
+Number == expr @{type == "Boolean"} := `this[expr + "?"]`
 
 Number <=> other := 
   (self == other) if_true: { 0 } if_false: { 
