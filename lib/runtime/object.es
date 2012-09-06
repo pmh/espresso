@@ -43,7 +43,7 @@ Object true?  = true
 Object false? = false
 Object nil?   = false
 
-Object extend: Enumerable
+Object extend: traits Enumerable
 
 Object to-s := {
   "<#{type} [#{(self map: { k | k }) join: ", "}]>"

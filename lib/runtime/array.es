@@ -23,7 +23,7 @@ Array each: block := {
 Array == other := { (join: ",") value-of == (other join: ",") value-of }
 Array == other @{type == "Boolean"} := `this[other + "?"]`
 
-Array extend: Enumerable
+Array extend: traits Enumerable
 
 Array println := {
   `console.log(self["to-s"]())`
