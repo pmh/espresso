@@ -217,6 +217,16 @@ describe("Translator", function () {
       ));
     });
 
+    it("should translate lambdas with arguments containing special characters", function () {
+      compile('{ foo-bar?! | }').should.eql(join_nl(
+        '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function (foo45bar6333) {',
+        '  var $elf = this.clone();',
+        '  $elf["foo-bar?!"] = (foo45bar6333 && foo45bar6333.type === "Array") ? foo45bar6333[0] : ((typeof foo45bar6333 !== "undefined") ? foo45bar6333 : nil);',
+        '  return nil;',
+        '});'
+      ));
+    });
+
     it("should translate lambdas with multiple arguments", function () {
       compile('{ foo, bar, baz | }').should.eql(join_nl(
         '(function (ctx, fn) { fn.__context = ctx; return fn; })($elf, function (foo, bar, baz) {',
