@@ -1,9 +1,6 @@
-Number fib := {
-  self match: {
-    when: 0 do: 0
-    when: 1 do: 1
-    when: _ do: { (self - 1) fib + (self - 2) fib }
-  }
-}
+0 fib := 0
+1 fib := 1
 
-10 fib println
+Number fib := (- 1) fib + (- 2) fib
+
+15 fib println
