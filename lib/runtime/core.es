@@ -33,9 +33,17 @@ EObject["send:"] = method(function (slot_name) {
 });
 
 EObject["send:args:"] = method(function (slot_name, args) {
-  var slot = this["lookup:"]([slot_name]);
+  var slot;
+  if (this.type === "Number") {
+    slot = (Number._cache[this.toString()] || (Number._cache[this.toString()] = new Number(this.toString())))["lookup:"]([slot_name]);
+  } else {
+    slot = this["lookup:"]([slot_name]);
+  }
   if (typeof slot !== "undefined") {
-    return (slot.type === "Method") ? slot.apply(this, args) : slot;
+    if (slot.type == "Method")
+      return slot.apply(this, args);
+
+    return slot;
   } else {
     return this["send:args:"]("unknown-slot:args:", [[slot_name], args])
   }
@@ -66,6 +74,10 @@ EObject["clone:"] = method(function (init) {
   return obj;
 });
 
+ENumber["clone"] = ENumber["clone:"] = method(function () {
+  return this;
+});
+
 Object.defineProperty(EObject, "init", {
   enumerable: false,
   value: function () {}
@@ -80,7 +92,7 @@ EObject["set:to:"] = method(function (name, expr) {
   name = name[0];
   expr = expr[0];
   this[name] = expr;
-  if (name.match(/^[A-Z]/)) this[name].type = name;
+  if (name.match && name.match(/^[A-Z]/)) this[name].type = name;
 
   return expr;
 });
@@ -110,6 +122,8 @@ EObject["define-method:predicates:do:"] = method(function (name, predicates, bod
   return this[name];
 });
 EBoolean = Boolean.prototype;
+
+Number._cache = {};
 
 nil.proto     = EObject;
 nil.delegates = [];`
