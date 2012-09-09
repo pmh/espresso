@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Espresso : A prototype-based programming language inspired by Self, Io, Ruby and Smalltalk" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Espresso</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/pmh/espresso">View on GitHub</a>
+
+          <h1 id="project_title">Espresso</h1>
+          <h2 id="project_tagline">A prototype-based programming language inspired by Self, Io, Ruby and Smalltalk</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/pmh/espresso/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/pmh/espresso/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Espresso</h1>
+
+<p>Espresson is an experimental dynamic, prototype-based, object-oriented programming language that compiles down to JavaScript.</p>
+
+<p>While it is object-oriented it's still very different from most modern languages, for instance you won't find any classes or variables, instead there are only objects and slots, even lexical scope is implemented entirely in terms of language primitives.</p>
+
+<p>The way you communicate with objects in Espresso is by sending messages of which there are three kinds: unary, binary and keyword.</p>
+
+<p>Espresso also has, although currently very limited, support for predicate dispatch.</p>
+
+<h2>Install</h2>
+
+<p><code>npm install -g espresso-language</code></p>
+
+<p>Note: This requires that you have nodejs v0.8.8 and npm installed already.</p>
+
+<h2>Hello, world!</h2>
+
+<p>So, let's look att how Epresso works. We'll start with the ever present Hello, world:</p>
+
+<pre><code>"Hello, world!" println //=&gt; "Hello, world!"
+</code></pre>
+
+<p>Here we are sending the unary message <code>println</code> to a string object containing <code>Hello, world!</code>. In this case, since println is a method, it results in a method call but it could just as well have been a regular slot access and it would have looked just the same.</p>
+
+<p>Now, let's expand this example and introduce a few more concepts:</p>
+
+<pre><code>Greeter = Object clone
+Greeter greet: name with: message := {
+  "#{message}, #{name}!" println
+}
+
+Greeter greet: "world" with: "Hello" //=&gt; "Hello, world!"
+</code></pre>
+
+<p>We begin by sending the <code>clone</code> message to the prototypical <code>Object</code> object, this returns a brand new object who's prototype points to <code>Object</code> and then assign it to <code>Greeter</code>.
+Next we define the <code>greet:with:</code> message on <code>Greeter</code>, the := operator signifies to the compiler that this should be treated as a method.
+Finally we send the <code>greet:with:</code> message to the <code>Greeter</code> object.
+One thing you may note is that the name of this message and it's arguments are mixed togheter, this is called a keyword message, but the name actually is <code>greet:with:</code> and you can validate this by asking <code>Greeter</code> for a reference to it rather than executing it, like so:</p>
+
+<p>greet = Greeter get: 'greet:with:
+  greet call: "world", "Hello" //=&gt; "Hello, world!"</p>
+
+<p>The <code>get:</code> message returns a method reference that we can <code>call:</code>. It takes a variadic number of arguments and will by default execute in the context of it's original receiver, in this case Greeter, though you can override that choice by sending the <code>call:as:</code> message instead.</p>
+
+<p>Now, you may be wondering about <code>Greeter</code> and <code>greet</code> since I earlier told you that there are no variables in Espresso, but they sure do look like variables don't they? Well, actually they are slots on an object, in this case the top-level object <code>Lobby</code>.</p>
+
+<pre><code>Lobby println // =&gt; Lobby
+                      Lobby
+                      type
+                      unknown-slot:args:
+                      to-s
+                      Object
+                      Lambda
+                      Number
+                      String
+                      Array
+                      Boolean
+                      RegExp
+                      nil
+                      traits
+                  &gt;&gt;&gt; Greeter
+                  &gt;&gt;&gt; greet
+</code></pre>
+
+<p>With that out of the way, let's return to our friend the Greeter and extend it further:</p>
+
+<pre><code>Greeter = Object clone
+Greeter greet: someone with: message := {
+  "#{name} says: #{message}, #{someone name}" println
+}
+
+g1 = Greeter clone: @{ name = "G1" }
+g2 = Greeter clone: @{ name = "G2" }
+
+g1 greet: g2 with: "Hello" //=&gt; "G1 says: Hello, G2!"
+</code></pre>
+
+<p>What we see here is a common architectural technique in prototype based languages, namely separating data from behavior. Our prototypical Greeter object depends on a name slot being defined but it never defines it rather it expects that any object which clones it does, in this case that would be g1 and g2.</p>
+
+<p>As you can see, g1 can now greet g2 with a nice message. But there's a slight problem here, and that is, our <code>greet:with:</code> method is very specific in that it requires it's first argument to be an object with a name slot. What if we wanted it to call it with a string instead?</p>
+
+<pre><code>g1 greet: "world" with: "Hello" //=&gt; "g1 says: Hello, nil!"
+</code></pre>
+
+<p>Hmm, not exactly what we wanted. Now we could solve that using a conditional inside the <code>greet:with:</code> method but then it wouldn't be possible to extend it further without changing that method. This is where predicate dispatch comes in handy:</p>
+
+<pre><code>Greeter greet: someone with: message := {
+  "#{name} says: #{message}, #{someone}!" println
+}
+
+Greeter greet: someone @{understands?: 'name} with: message := {
+  greet: someone name with: message
+}
+
+
+g1 greet: "world" with: "Hello" //=&gt; "P1 says: Hello, world!"
+g1 greet: g2      with: "Hello" //=&gt; "P1 says: Hello, P2!"
+</code></pre>
+
+<p>Now we have two implementations of <code>greet:with:</code> a specific one which requires a named object and a general one that accepts any object. The great thing about this is that it can be extended further, even by third party code, without needing to change the original definition. </p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Espresso maintained by <a href="https://github.com/pmh">pmh</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
