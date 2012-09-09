@@ -1,16 +1,18 @@
 {
   "author": "Patrik Hedman <patrik.hedman@gmail.com>",
-  "name": "espresso",
+  "name": "espresso-language",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
-    "url": ""
+    "type": "git", 
+    "url": "https://github.com/pmh/espresso.git"
   },
+  "bin": { "esc": "bin/esc"},
   "engines": {
-    "node": "~0.6.1"
+    "node": "~0.8.8"
   },
   "dependencies": {
-    "ometajs": "~3.0.15"
+    "commander" : "~1.0.1"
   },
   "devDependencies": {
     "mocha": "~1.1.0",

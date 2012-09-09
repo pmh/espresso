@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+var espresso = Object.create(require('../index'))
+  , program  = require('commander')
+  , fs       = require('fs');
+
+program
+  .version('0.0.1')
+  .option( '-e, --eval'    , 'compile and eval an .es program'          )
+  .option( '-a, --ast'     , 'prints the ast'                           )
+  .option( '-p, --print'   , 'prints the compiled javascript to stdout' )
+  .option( '-c, --compile' , 'compile an .es program into a .js file'   )
+  .parse(process.argv);
+
+if (program.args[0]) {
+  var source = espresso.compileFile(program.args[0], "utf8");
+
+  if (program.ast)     espresso.ast.print_tree();
+  if (program.print)   console.log(source);
+  if (program.compile) {fs.writeFileSync(process.argv[2].replace('.es', '.js'), source, 'utf8');}
+  if (program.eval)    eval(source);
+
+  if (program.rawArgs.length === 3) eval(source);
+}
+
+if (program.rawArgs.length === 2) {
+  var repl = require("repl").start({
+    prompt    : "> ",
+    eval      : eval_espresso
+  });
+
+  eval(espresso.compile(""));
+  Object.prototype.inspect = function () {
+    return this["to-s"]();
+  };
+};
+
+function eval_espresso(cmd, context, filename, callback) {
+  try {
+    callback(null, eval(espresso.compile(cmd.substr(1, cmd.length - 2), {skip_runtime: true})));
+  } catch (ex) {
+    console.log(ex);
+    callback(null);
+  }
+}
