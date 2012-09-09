@@ -284,17 +284,17 @@ describe("Parser", function () {
     });
     
     it ('can parse short-circuiting logic operators', function(){
-      parser.parseFrom( "x || y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("||")));
-      parser.parseFrom( "x && y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&&")));
-      parser.parseFrom( "x |  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("|")));
-      parser.parseFrom( "x ^  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("^")));
-      parser.parseFrom( "x &  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&")));
+      parser.parseFrom( "x || y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("||").short_circuit(true)));
+      parser.parseFrom( "x && y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&&").short_circuit(true)));
+      parser.parseFrom( "x |  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("|").short_circuit(true)));
+      parser.parseFrom( "x ^  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("^").short_circuit(true)));
+      parser.parseFrom( "x &  y", "messageSend" ).should.eql(_.UnaryMsg(_.Id("x"), _.BinaryMsg(_.Id("y")).operator("&").short_circuit(true)));
 
-      parser.parseFrom( "|| y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("||"));
-      parser.parseFrom( "&& y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&&"));
-      parser.parseFrom( "|  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("|"));
-      parser.parseFrom( "^  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("^"));
-      parser.parseFrom( "&  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&"));
+      parser.parseFrom( "|| y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("||").short_circuit(true));
+      parser.parseFrom( "&& y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&&").short_circuit(true));
+      parser.parseFrom( "|  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("|").short_circuit(true));
+      parser.parseFrom( "^  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("^").short_circuit(true));
+      parser.parseFrom( "&  y",   "messageSend" ).should.eql(_.BinaryMsg(_.Id("y")).operator("&").short_circuit(true));
     });
     
     it ('can parse equality operators', function () {
@@ -410,7 +410,7 @@ describe("Parser", function () {
       parser.parseFrom("x += y || z", "messageSend").should.eql(
       _.AssignMsg (
           _.Id('x'), 
-          _.UnaryMsg(_.Id('y'), _.BinaryMsg(_.Id('z')).operator('||'))
+          _.UnaryMsg(_.Id('y'), _.BinaryMsg(_.Id('z')).operator('||').short_circuit(true))
         ).operator('+='));
     });
   });
