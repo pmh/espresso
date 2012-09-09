@@ -10,7 +10,7 @@ Espresso also has, although currently very limited, support for predicate dispat
 
 ## Install
 
-`npm install espresso-language`
+`npm install -g espresso-language`
 
 Note: This requires that you have nodejs v0.8.8 and npm installed already.
 
