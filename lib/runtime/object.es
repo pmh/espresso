@@ -8,7 +8,7 @@ Object each: iterator := {
 
 Object get: slot := {
   slot = lookup: slot
-  `if ($elf.slot.type === "Method") { $elf.slot.type = "Lambda" ; $elf.slot.__context = this }`
+  `if ($elf.slot && $elf.slot.type === "Method") { $elf.slot.type = "Lambda" ; $elf.slot.__context = this }`
   slot
 }
 
