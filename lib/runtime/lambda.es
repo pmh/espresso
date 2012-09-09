@@ -11,3 +11,4 @@ Lambda apply: args as: ctx := self.apply(ctx, args)
 Lambda to-s := "<#{type}>"
 
 Lambda == other := `self.toString() == other.toString()`
+Lambda == expr @{type == "Boolean"} := `this[expr + "?"]`

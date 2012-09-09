@@ -4,11 +4,8 @@ require: "examples/shark-roles/Dying"
 Shark = Object clone
 Shark extend: Healthy
 
-goblin = Shark clone
-goblin name = "Goblin Shark"
-
-lemon = Shark clone
-lemon name = "Lemon Shark"
+goblin = Shark clone: @{ name = "Goblin Shark" }
+lemon  = Shark clone: @{ name = "Lemon Shark" }
 
 goblin attack: lemon
 lemon  attack: goblin

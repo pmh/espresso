@@ -1,6 +1,6 @@
 {
   "author": "Patrik Hedman <patrik.hedman@gmail.com>",
-  "name": "espresso-lang",
+  "name": "espresso-language",
   "description": "",
   "version": "0.1.0",
   "repository": {
@@ -8,9 +8,6 @@
     "url": "https://github.com/pmh/espresso.git"
   },
   "bin": { "esc": "bin/esc"},
-  "repository": {
-    "url": ""
-  },
   "engines": {
     "node": "~0.8.8"
   },

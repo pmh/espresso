@@ -33,9 +33,17 @@ EObject["send:"] = method(function (slot_name) {
 });
 
 EObject["send:args:"] = method(function (slot_name, args) {
-  var slot = this["lookup:"]([slot_name]);
+  var slot;
+  if (this.type === "Number") {
+    slot = (Number._cache[this.toString()] || (Number._cache[this.toString()] = new Number(this.toString())))["lookup:"]([slot_name]);
+  } else {
+    slot = this["lookup:"]([slot_name]);
+  }
   if (typeof slot !== "undefined") {
-    return (slot.type === "Method") ? slot.apply(this, args) : slot;
+    if (slot.type == "Method")
+      return slot.apply(this, args);
+
+    return slot;
   } else {
     return this["send:args:"]("unknown-slot:args:", [[slot_name], args])
   }
@@ -59,11 +67,15 @@ EObject["clone:"] = method(function (init) {
     enumerable: false,
     value: {}
   });
-
-  this.init.call(obj);
-  obj.init.call(obj);
+  
+  this.init.call(obj, obj);
+  obj.init.call(obj, obj);
 
   return obj;
+});
+
+ENumber["clone"] = ENumber["clone:"] = method(function () {
+  return this;
 });
 
 Object.defineProperty(EObject, "init", {
@@ -80,7 +92,7 @@ EObject["set:to:"] = method(function (name, expr) {
   name = name[0];
   expr = expr[0];
   this[name] = expr;
-  if (name.match(/^[A-Z]/)) this[name].type = name;
+  if (name.match && name.match(/^[A-Z]/)) this[name].type = name;
 
   return expr;
 });
@@ -97,9 +109,9 @@ EObject["define-method:predicates:do:"] = method(function (name, predicates, bod
   var old = this[ name ];
 
   this[ name ] = method(function(){
-    var args = arguments;
+    var args = arguments, self = this;
     if ( args.length === body.length &&
-         predicates.every(function (c, idx) { return typeof c === "function" ? c(args[idx][0] ? args[idx][0] : args[idx]) : (c === true ? true : false); }) )
+         predicates.every(function (c, idx) { return typeof c === "function" ? c.call(self, (typeof args[idx][0] === "undefined") ? args[idx] : args[idx][0]) : (c === true ? true : false); }) )
         return body.apply( this, arguments );
     else if ( typeof old == 'function' )
       return old.apply( this, arguments );
@@ -110,6 +122,8 @@ EObject["define-method:predicates:do:"] = method(function (name, predicates, bod
   return this[name];
 });
 EBoolean = Boolean.prototype;
+
+Number._cache = {};
 
 nil.proto     = EObject;
 nil.delegates = [];`

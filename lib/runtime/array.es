@@ -20,7 +20,10 @@ Array each: block := {
   self
 }
 
-Array extend: Enumerable
+Array == other := { (join: ",") value-of == (other join: ",") value-of }
+Array == other @{type == "Boolean"} := `this[other + "?"]`
+
+Array extend: traits Enumerable
 
 Array println := {
   `console.log(self["to-s"]())`

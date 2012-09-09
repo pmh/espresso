@@ -8,7 +8,7 @@ String println := {
 String to-s  := self value-of
 String + str := `self + str["to-s"]()`
 
-String == other := `self == other`
+String == other := `other == true ? true : self == other`
 
 String <=> other :=
   (self == other) if_true: { 0 } if_false: { 
@@ -17,4 +17,4 @@ String <=> other :=
 
 String value-of := .this.valueOf()
 
-String match: regex := `self.match(regex[0]) || nil`
+String match: regex @{ (type == "RegExp") || (type == "String") } := `self.match(regex[0]) || nil`

@@ -3,15 +3,16 @@
 Spec = Object clone
 
 Spec suite = Object clone
+
 Spec suite unknown-slot: slot args: *args := {
   _it = clone
   _it desc = [slot]
   _it unknown-slot: slot args: *args := {
-    (slot type == "Lambda") if_true: {
-      "  - #{(desc join: " ")} #{slot call-as: self}" println
-    } if_false: {
-      desc push: slot
-    }
+    _it desc push: slot
+    _it
+  }
+  _it unknown-slot: slot @{ understands?: 'call } args: *args := {
+    "  - #{(desc join: " ")} #{slot call-as: self}" println
     _it
   }
   _it

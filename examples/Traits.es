@@ -2,14 +2,14 @@
 traits Point = Object clone
 traits Point print := "#{type} => x: #{x}, y: #{y}" println
 
-Point = traits Point clone: {
-  self x = 23
-  self y = 12
+Point = traits Point clone: @{
+  x = 23
+  y = 12
 }
 
-ComputedPoint = traits Point clone: {
-  self x := 23 + 100
-  self y := x - 10
+ComputedPoint = traits Point clone: @{
+  x := 23 + 100
+  y := x - 10
 }
 
 point = Point clone

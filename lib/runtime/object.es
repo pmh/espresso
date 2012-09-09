@@ -8,7 +8,7 @@ Object each: iterator := {
 
 Object get: slot := {
   slot = lookup: slot
-  `if ($elf.slot.type === "Method") $elf.slot.type = "Method Object"`
+  `if ($elf.slot && $elf.slot.type === "Method") { $elf.slot.type = "Lambda" ; $elf.slot.__context = this }`
   slot
 }
 
@@ -32,6 +32,7 @@ Object unextend: delegate := {
 Object unknown-slot: slot args: args := nil
 
 Object == expr := `this === $elf.expr`
+Object == expr @{type == "Boolean"} := `this[expr + "?"]`
 
 Object if_true:  blk := blk call
 Object if_false: blk := nil
@@ -42,7 +43,7 @@ Object true?  = true
 Object false? = false
 Object nil?   = false
 
-Object extend: Enumerable
+Object extend: traits Enumerable
 
 Object to-s := {
   "<#{type} [#{(self map: { k | k }) join: ", "}]>"
@@ -100,4 +101,26 @@ Object perform: selector := {
 
 Object perform: selector args: *args := {
   self["send:args:"](selector, args)
+}
+
+Object delete: slot := { `delete this[slot]` ; nil }
+
+traits Match = Object clone
+
+traits Match _ = true
+
+traits Match when: pred do: blk := {
+  pred = ((pred type == "Array") if_true: { [pred] } if_false: { pred value-of })
+  self matchers push: clone
+}
+
+Object match: blk := {
+  matcher = traits Match clone: @{ matchers = [] }
+  matcher extend: self
+  matchers = (blk call: matcher as: matcher)
+  matchers each: { match |
+    (self value-of == match pred value-of) if_true: {
+      return! (match blk understands?: 'call) if_true: { match blk call: self } if_false: { match blk }
+    }
+  }
 }
