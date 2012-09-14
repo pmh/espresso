@@ -10,7 +10,15 @@ Espresso also has, although currently very limited, support for predicate dispat
 
 ## Install
 
-`npm install -g espresso-language`
+    npm install -g espresso-language
+
+This will install the Espresso compiler (esc) globally on your machine.
+
+To run a Espresso script just type `esc name.es`, if you would rather compile it to a js file type `esc name.es --compile` which will create a JavaScript file with the same basename in the current directory (name.js in this case).
+
+Executing `esc` without any arguments launches a (very basic) REPL.
+
+For more information run `esc --help`
 
 Note: This requires that you have nodejs v0.8.8 and npm installed already.
 
@@ -36,8 +44,8 @@ Next we define the `greet:with:` message on `Greeter`, the := operator signifies
 Finally we send the `greet:with:` message to the `Greeter` object.
 One thing you may note is that the name of this message and it's arguments are mixed togheter, this is called a keyword message, but the name actually is `greet:with:` and you can validate this by asking `Greeter` for a reference to it rather than executing it, like so:
 
-  greet = Greeter get: 'greet:with:
-  greet call: "world", "Hello" //=> "Hello, world!"
+    greet = Greeter get: 'greet:with:
+    greet call: "world", "Hello" //=> "Hello, world!"
 
 The `get:` message returns a method reference that we can `call:`. It takes a variadic number of arguments and will by default execute in the context of it's original receiver, in this case Greeter, though you can override that choice by sending the `call:as:` message instead.
 
