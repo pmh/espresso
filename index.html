@@ -43,7 +43,16 @@
 
 <h2>Install</h2>
 
-<p><code>npm install -g espresso-language</code></p>
+<pre><code>npm install -g espresso-language
+</code></pre>
+
+<p>This will install the Espresso compiler (esc) globally on your machine.</p>
+
+<p>To run a Espresso script just type <code>esc name.es</code>, if you would rather compile it to a js file type <code>esc name.es --compile</code> which will create a JavaScript file with the same basename in the current directory (name.js in this case).</p>
+
+<p>Executing <code>esc</code> without any arguments launches a (very basic) REPL.</p>
+
+<p>For more information run <code>esc --help</code></p>
 
 <p>Note: This requires that you have nodejs v0.8.8 and npm installed already.</p>
 
@@ -71,8 +80,9 @@ Next we define the <code>greet:with:</code> message on <code>Greeter</code>, the
 Finally we send the <code>greet:with:</code> message to the <code>Greeter</code> object.
 One thing you may note is that the name of this message and it's arguments are mixed togheter, this is called a keyword message, but the name actually is <code>greet:with:</code> and you can validate this by asking <code>Greeter</code> for a reference to it rather than executing it, like so:</p>
 
-<p>greet = Greeter get: 'greet:with:
-  greet call: "world", "Hello" //=&gt; "Hello, world!"</p>
+<pre><code>greet = Greeter get: 'greet:with:
+greet call: "world", "Hello" //=&gt; "Hello, world!"
+</code></pre>
 
 <p>The <code>get:</code> message returns a method reference that we can <code>call:</code>. It takes a variadic number of arguments and will by default execute in the context of it's original receiver, in this case Greeter, though you can override that choice by sending the <code>call:as:</code> message instead.</p>
 
